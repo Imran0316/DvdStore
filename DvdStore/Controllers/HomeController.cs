@@ -1,6 +1,6 @@
-using System.Diagnostics;
-using DvdStore.Models;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using DvdStore.Models;
 
 namespace DvdStore.Controllers
 {

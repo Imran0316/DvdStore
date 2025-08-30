@@ -5,6 +5,8 @@ namespace DvdStore.Models
 {
     public class Products
     {
-    
+        [Key]
+        public int ProductId { get; set; }
+        public string Title { get; set; }
     }
 }
