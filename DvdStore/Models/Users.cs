@@ -10,7 +10,6 @@ namespace DvdStore.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public DateTime Created_At { get; set; }
-        public bool Status { get; set; }
 
 
     }
