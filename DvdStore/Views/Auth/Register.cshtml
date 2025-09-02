@@ -2,62 +2,189 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
- Layout = null;
+    Layout = null;
 }
 
 @model DvdStore.Models.Users
 
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Anime Template">
-    <meta name="keywords" content="Anime, unica, creative, html">
+    <meta name="description" content="Gaming DVD Store - Register">
+    <meta name="keywords" content="Gaming, DVD, Register, SignUp">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@ViewData["Title"] - Anime Template</title>
+    <title>@ViewData["Title"] - DVD Gaming Store</title>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- CSS Styles -->
-    <link rel="stylesheet" href="~/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="~/css/plyr.css" type="text/css">
-    <link rel="stylesheet" href="~/css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="~/css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/style.css" type="text/css">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/css/style.css">
 </head>
 <style>
-body{
-    /* background-color:#0B0C2A ; */
-    color: white;
-}
-</style>
-<h2 class="text-white text-center">Register</h2>
-<div class="text-danger small">@ViewBag.message</div>
-<form  asp-action="Register" method="post">
-    <div>
-        <label >Username</label>
-        <input asp-for="Name" name="Name" class="form-control"/>
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" name=Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" name="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-info">Register</button>
-</form>
+    body {
+        background: linear-gradient(135deg, #0b0c2a, #1a1b3a);
+        font-family: 'Mulish', sans-serif;
+        background-image: url('~/img/hero/hero-1.jpg');
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    /* Animation keyframes */
+    @@keyframes move {
+        from {
+            transform: translate(0,0);
+        }
+
+        to {
+            transform: translate(60px,60px);
+        }
+    }
+
+    @@keyframes rotate {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+
+    /* Card Animation Background */
+    .register-card {
+        position: relative;
+        background: rgba(20, 20, 40, 0.9);
+        padding: 40px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 420px;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        .register-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(#ff3c3c, #ffffff, #ff3c3c, #1a1b3a);
+            animation: rotate 6s linear infinite;
+            z-index: -1;
+        }
+
+        .register-card::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+    /* 🔧 Razor-safe: escape keyframes as @@keyframes */
+    @@keyframes rotate {
+        100%
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Half red, half white heading */
+    h2 {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 25px;
+        color:red !important;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #ff3c3c;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-control {
+        background: #12122b;
+        border: 1px solid #2a2b50;
+        color: #fff;
+        border-radius: 8px;
+        z-index: 2;
+        position: relative;
+    }
+
+        .form-control:focus {
+            border-color: #ff3c3c;
+            box-shadow: 0 0 8px rgba(255, 60, 60, 0.6);
+        }
+
+    .btn-register {
+        background: #ff3c3c;
+        color: #fff;
+        font-weight: bold;
+        width: 100%;
+        border-radius: 8px;
+        transition: 0.3s;
+        position: relative;
+        z-index: 2;
+    }
+
+        .btn-register:hover {
+            background: #ff5c5c;
+            transform: scale(1.05);
+        }
+        .reg{
+        position: relative;
+        z-index: 2;
+        }
+    .error {
+        font-size: 0.85rem;
+        position: relative;
+        z-index: 2;
+    }
+</style>
+<body>
+    <div class="register-card">
+        <h2 class="text-danger reg">Register</h2>
+        <div class="text-danger error small text-center">@ViewBag.message</div>
+
+        <form asp-action="Register" method="post">
+            <div class="mb-3">
+                <label>Username</label>
+                <input asp-for="Name" name="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input asp-for="Email" name="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input asp-for="Password" name="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-register">Register</button>
+        </form>
+    </div>
+
+    @* Note: Agar Layout = null hai to sections use na karein *@
+    @* @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    } *@
+</body>
+</html>
