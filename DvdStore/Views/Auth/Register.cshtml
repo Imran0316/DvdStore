@@ -154,33 +154,26 @@
         z-index: 2;
     }
 </style>
-<body>
-    <div class="register-card">
-        <h2 class="text-danger reg">Register</h2>
-        <div class="text-danger error small text-center">@ViewBag.message</div>
-
-        <form asp-action="Register" method="post">
-            <div class="mb-3">
-                <label>Username</label>
-                <input asp-for="Name" name="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label>Email</label>
-                <input asp-for="Email" name="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label>Password</label>
-                <input asp-for="Password" name="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-register">Register</button>
-        </form>
+<h2 class="text-white text-center">Register</h2>
+<div class="text-danger small">@ViewBag.message</div>
+<form  asp-action="Register" method="post">
+    <div>
+        <label >Username</label>
+        <input asp-for="Name" name="Name" class="form-control"/>
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" name=Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label>Password</label>
+        <input asp-for="Password" name="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-info">Register</button>
+</form>
 
     @* Note: Agar Layout = null hai to sections use na karein *@
     @* @section Scripts {

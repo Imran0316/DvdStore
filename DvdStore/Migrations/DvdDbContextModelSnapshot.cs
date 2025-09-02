@@ -60,7 +60,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("tbl_Albums");
+                    b.ToTable("tbl_Albums", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Artists", b =>
@@ -84,7 +84,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("ArtistID");
 
-                    b.ToTable("tbl_Artists");
+                    b.ToTable("tbl_Artists", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Cart", b =>
@@ -105,7 +105,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Carts");
+                    b.ToTable("tbl_Carts", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.CartItems", b =>
@@ -131,7 +131,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("tbl_CartItems");
+                    b.ToTable("tbl_CartItems", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Category", b =>
@@ -153,7 +153,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("tbl_Category");
+                    b.ToTable("tbl_Category", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.OrderDetails", b =>
@@ -182,7 +182,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("tbl_OrderDetails");
+                    b.ToTable("tbl_OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Orders", b =>
@@ -215,7 +215,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Orders");
+                    b.ToTable("tbl_Orders", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Payments", b =>
@@ -253,7 +253,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Payments");
+                    b.ToTable("tbl_Payments", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Producers", b =>
@@ -278,7 +278,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("ProducerID");
 
-                    b.ToTable("tbl_Producers");
+                    b.ToTable("tbl_Producers", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Products", b =>
@@ -322,7 +322,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("tbl_Products");
+                    b.ToTable("tbl_Products", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.PurchaseInvoice", b =>
@@ -350,7 +350,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("tbl_PurchaseInvoices");
+                    b.ToTable("tbl_PurchaseInvoices", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.PurchaseInvoiceDetail", b =>
@@ -379,7 +379,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("PurchaseInvoiceID");
 
-                    b.ToTable("tbl_PurchaseInvoiceDetails");
+                    b.ToTable("tbl_PurchaseInvoiceDetails", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Suppliers", b =>
@@ -404,7 +404,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("SupplierID");
 
-                    b.ToTable("tbl_Suppliers");
+                    b.ToTable("tbl_Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Users", b =>
@@ -432,7 +432,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("UserID");
 
-                    b.ToTable("tbl_Users");
+                    b.ToTable("tbl_Users", (string)null);
                 });
 
             modelBuilder.Entity("DvdStore.Models.Albums", b =>
