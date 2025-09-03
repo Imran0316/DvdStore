@@ -1,6 +1,7 @@
 ﻿using DvdStore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DvdStore.Controllers
@@ -36,6 +37,44 @@ namespace DvdStore.Controllers
             var categories = db.tbl_Category.ToList();
             return View(categories);
         }
+        public IActionResult EditCategory() {
+        
+            return View();
+        }
+        [HttpGet]
+        public IActionResult EditCategory(int id)
+        {
+            if (id == 0)
+            {
+                return NotFound();
+            }
+
+            var category = db.tbl_Category.FirstOrDefault(c => c.CategoryID == id);
+
+            if (category == null)
+            {
+                return NotFound(); // ya phir view me "Category not found." ka message
+            }
+
+            return View(category); // yahan single category bhejna hai, list nahi
+        }
+        [HttpPost]
+        public IActionResult EditCategory(Category model)
+        {
+            if (ModelState.IsValid)
+            {
+                var category = db.tbl_Category.FirstOrDefault(c => c.CategoryID == model.CategoryID);
+                if (category != null)
+                {
+                    category.CategoryName = model.CategoryName;
+                    category.Description = model.Description;
+                    db.SaveChanges();
+                }
+                return RedirectToAction("Categories");
+            }
+            return View(model);
+        }
+
 
     }
 }
