@@ -24,8 +24,7 @@
     <link rel="stylesheet" href="~/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/style.css">
-</head>
-<style>
+    <style>
     body {
         background: linear-gradient(135deg, #0b0c2a, #1a1b3a);
         font-family: 'Mulish', sans-serif;
@@ -38,7 +37,7 @@
     }
 
     /* Animation keyframes */
-    @@keyframes move {
+    /* @@keyframes move {
         from {
             transform: translate(0,0);
         }
@@ -52,7 +51,7 @@
         100% {
             transform: rotate(360deg);
         }
-    }
+    } */
 
 
     /* Card Animation Background */
@@ -85,18 +84,17 @@
             inset: 3px;
             background: rgba(20, 20, 40, 0.95);
             border-radius: 12px;
+            border-radius: 12px;
+            border-radius: 12px;
             z-index: 1;
         }
 
     /* 🔧 Razor-safe: escape keyframes as @@keyframes */
-    @@keyframes rotate {
-        100%
-
-    {
-        transform: rotate(360deg);
-    }
-
-    }
+    /* @@keyframes rotate {
+        100% {
+            transform: rotate(360deg);
+        }
+    } */
 
     /* Half red, half white heading */
     h2 {
@@ -104,7 +102,7 @@
         font-weight: 700;
         text-align: center;
         margin-bottom: 25px;
-        color:red !important;
+        color: red !important;
     }
 
     label {
@@ -144,40 +142,42 @@
             background: #ff5c5c;
             transform: scale(1.05);
         }
-        .reg{
+
+    .reg {
         position: relative;
         z-index: 2;
-        }
+    }
+
     .error {
         font-size: 0.85rem;
         position: relative;
         z-index: 2;
     }
 </style>
-<h2 class="text-white text-center">Register</h2>
-<div class="text-danger small">@ViewBag.message</div>
-<form  asp-action="Register" method="post">
-    <div>
-        <label >Username</label>
-        <input asp-for="Name" name="Name" class="form-control"/>
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" name=Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" name="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-info">Register</button>
-</form>
+</head>
 
-    @* Note: Agar Layout = null hai to sections use na karein *@
-    @* @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
-    } *@
+<body>
+    <h2 class="text-white text-center">Register</h2>
+    <div class="text-danger small">@ViewBag.message</div>
+    <form asp-action="Register" method="post">
+        <div>
+            <label>Username</label>
+            <input asp-for="Name" name="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Email</label>
+            <input asp-for="Email" name="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Password</label>
+            <input asp-for="Password" name="Password" class="form-control" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-info">Register</button>
+    </form>
+
+
 </body>
 </html>

@@ -1,0 +1,59 @@
+﻿@model IEnumerable<DvdStore.Models.Category>
+@{
+    Layout = "Dashboard"; // tumhara admin layout
+    ViewBag.Title = "Categories";
+}
+
+<h2>Manage Categories</h2>
+
+<!-- Add New Category Form -->
+<form asp-action="Categories" method="post" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" name="CategoryName" placeholder="Category Name" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="Description" placeholder="Description" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Add</button>
+        </div>
+    </div>
+</form>
+
+<!-- Categories Table -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int count = 1;
+            foreach (var c in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@c.CategoryName</td>
+                    <td>@c.Description</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="EditCategory" asp-route-id="@c.CategoryID">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteCategory" asp-route-id="@c.CategoryID">Delete</a>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">No categories found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
