@@ -75,6 +75,19 @@ namespace DvdStore.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult DeleteCategory(int id)
+        {
+            var category = db.tbl_Category.FirstOrDefault(c => c.CategoryID == id);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
+            db.tbl_Category.Remove(category);
+            db.SaveChanges();
+
+            return RedirectToAction("Categories");
+        }
     }
 }
