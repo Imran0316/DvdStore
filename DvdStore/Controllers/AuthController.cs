@@ -64,6 +64,7 @@ namespace DvdStore.Controllers
 
                 if (result == PasswordVerificationResult.Success)
                 {
+                    HttpContext.Session.SetString("UserName", user.Name);
                     HttpContext.Session.SetString("UserEmail", user.Email);
                     HttpContext.Session.SetInt32("UserId", user.UserID);
 

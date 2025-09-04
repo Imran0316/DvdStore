@@ -89,5 +89,26 @@ namespace DvdStore.Controllers
 
             return RedirectToAction("Categories");
         }
+
+        // fetch all Users
+        public IActionResult Users()
+        {
+            var users = db.tbl_Users.ToList(); 
+            return View(users);
+        }
+        //Delete Users
+        public IActionResult Delete(int id)
+        {
+            var user = db.tbl_Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            db.tbl_Users.Remove(user);
+            db.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
     }
 }
