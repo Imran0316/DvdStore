@@ -1,0 +1,61 @@
+﻿@model IEnumerable<DvdStore.Models.Producers>
+@{
+    Layout = "Dashboard"; // admin layout
+    ViewBag.Title = "Producers";
+}
+
+<h2>Manage Producers</h2>
+
+<!-- Add New Producer Form -->
+<form asp-action="Producer" method="post" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <input name="ProducerName" placeholder="Producer Name" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <input name="ContactInfo" placeholder="Contact Info" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Add</button>
+        </div>
+    </div>
+</form>
+
+<!-- Producers Table -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Producer Name</th>
+            <th>Contact Info</th>
+            <th>Created At</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int count = 1;
+            foreach (var p in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@p.ProducerName</td>
+                    <td>@p.ContactInfo</td>
+                    <td>@p.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="EditProducer" asp-route-id="@p.ProducerID">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteProducer" asp-route-id="@p.ProducerID" onclick="return confirm('Are you sure you want to delete this producer?');">Delete</a>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">No producers found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

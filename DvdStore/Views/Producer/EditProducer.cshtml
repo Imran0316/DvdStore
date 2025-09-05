@@ -1,0 +1,29 @@
+﻿@model DvdStore.Models.Producers
+@{
+    Layout = "Dashboard";
+}
+
+
+<h2>Edit Producers</h2>
+
+@if (Model == null)
+{
+    <p>Producers not found.</p>
+}
+else
+{
+    <form asp-action="EditProducer" method="post" class="mb-3">
+        <div class="row">
+            <input type="hidden" asp-for="@Model.ProducerID" />
+            <div class="col-md-4">
+                <input type="text" name="ProducerName" value="@Model.ProducerName" placeholder="Category Name" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="ContactInfo" value="@Model.ContactInfo" placeholder="Phone" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Add</button>
+            </div>
+        </div>
+    </form>
+}
