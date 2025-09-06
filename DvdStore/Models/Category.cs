@@ -7,8 +7,8 @@ namespace DvdStore.Models
         [Key]
         public int CategoryID { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Name is required")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain alphabets and spaces")]
         public string CategoryName { get; set; }
 
         [StringLength(250)]

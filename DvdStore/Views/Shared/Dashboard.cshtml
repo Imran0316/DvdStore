@@ -67,6 +67,14 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
                             Producers
                         </a>
+                        <a class="nav-link" asp-controller="Artist" asp-action="Artists">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            Artists
+                        </a>
+                        <a class="nav-link" asp-controller="Albums" asp-action="Albums">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            Albums
+                        </a>
                         <a class="nav-link" asp-controller="Admin" asp-action="users">
                             <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                             Users
@@ -91,14 +99,12 @@
         <!-- Main Content -->
         <div id="layoutSidenav_content">
             <main>
-                <div class="container-fluid px-4">
-                    <h2 class="mt-4 text-center text-uppercase" style="letter-spacing:4px">
-                        Ecommerce Website
-                    </h2>
+                <div class="container-fluid px-5 py-5">
+                    
+                        @RenderBody()
+                    
                 </div>
-                <div>
-                    @RenderBody()
-                </div>
+
             </main>
 
             <!-- Footer -->

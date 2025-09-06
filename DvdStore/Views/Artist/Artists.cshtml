@@ -1,0 +1,62 @@
+﻿@model IEnumerable<DvdStore.Models.Artists>
+@{
+    Layout = "Dashboard"; // admin layout
+    ViewBag.Title = "Artists";
+}
+
+<h2>Manage Artists</h2>
+
+<!-- Add New Artist Form -->
+<form asp-action="Artists" method="post" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <input name="ArtistName" placeholder="Artist Name" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <input name="Bio" placeholder="Short Bio" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Add</button>
+        </div>
+    </div>
+</form>
+
+<!-- Artists Table -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Artist Name</th>
+            <th>Bio</th>
+            <th>Created At</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int count = 1;
+            foreach (var a in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@a.ArtistName</td>
+                    <td>@a.Bio</td>
+                    <td>@a.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="EditArtist" asp-route-id="@a.ArtistID">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteArtist" asp-route-id="@a.ArtistID" onclick="return confirm('Are you sure you want to delete this artist?');">Delete</a>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">No artists found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

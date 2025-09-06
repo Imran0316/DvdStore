@@ -1,0 +1,112 @@
+﻿@model IEnumerable<DvdStore.Models.Albums>
+@{
+    Layout = "Dashboard"; 
+    ViewBag.Title = "Albums";
+}
+
+<h2>Manage Albums</h2>
+
+<!-- Add New Album Form -->
+<form asp-action="Albums" method="post" enctype="multipart/form-data" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Title</label>
+            <input name="Title" placeholder="Album Title" class="form-control" required />
+        </div>
+
+        <div class="col-md-3">
+            <label>Artist</label>
+            <select name="ArtistID" class="form-control">
+                <option value="">-- Select Artist --</option>
+                @foreach (var artist in ViewBag.Artists as List<DvdStore.Models.Artists>)
+                {
+                    <option value="@artist.ArtistID">@artist.ArtistName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Category</label>
+            <select name="CategoryID" class="form-control">
+                <option value="">-- Select Category --</option>
+                @foreach (var category in ViewBag.Categories as List<DvdStore.Models.Category>)
+                {
+                    <option value="@category.CategoryID">@category.CategoryName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Release Date</label>
+            <input type="date" name="ReleaseDate" class="form-control" />
+        </div>
+
+        <div class="col-md-6 mt-2">
+            <label>Cover Image</label>
+            <input type="file" name="CoverImage" class="form-control" />
+        </div>
+
+
+        <div class="col-md-6 mt-2">
+            <label>Description</label>
+            <textarea name="Description" placeholder="Description" class="form-control"></textarea>
+        </div>
+
+        <div class="col-md-12 mt-2">
+            <button type="submit" class="btn btn-success">Add Album</button>
+        </div>
+    </div>
+</form>
+
+
+<!-- Albums Table -->
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Category</th>
+            <th>Release Date</th>
+            <th>Cover</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int count = 1;
+            foreach (var a in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@a.Title</td>
+                    <td>@a.tbl_Artists?.ArtistName</td>
+                    <td>@a.tbl_Category?.CategoryName</td>
+                    <td>@a.ReleaseDate?.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(a.CoverImageUrl))
+                        {
+                            <img src="@a.CoverImageUrl" alt="Cover" style="height:50px;width:auto;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Image</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="EditAlbum" asp-route-id="@a.AlbumID">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteAlbum" asp-route-id="@a.AlbumID" onclick="return confirm('Are you sure you want to delete this album?');">Delete</a>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">No albums found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

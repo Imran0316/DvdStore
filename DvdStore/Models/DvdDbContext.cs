@@ -21,6 +21,7 @@ namespace DvdStore.Models
         public DbSet<CartItems> tbl_CartItems { get; set; }
         public DbSet<PurchaseInvoice> tbl_PurchaseInvoices { get; set; }
         public DbSet<PurchaseInvoiceDetail> tbl_PurchaseInvoiceDetails { get; set; }
+        public DbSet<Songs> tbl_Songs { get; set; }
 
 
 
