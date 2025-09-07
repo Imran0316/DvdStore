@@ -34,51 +34,48 @@ namespace DvdStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                // agar file upload hui hai
                 if (CoverImage != null && CoverImage.Length > 0)
                 {
-                    // folder path (wwwroot ke andar)
                     var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "albums");
 
-                    // agar folder nahi hai to create karo
                     if (!Directory.Exists(uploadFolder))
                     {
                         Directory.CreateDirectory(uploadFolder);
                     }
 
-                    // unique filename
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(CoverImage.FileName);
-
-                    // full path
                     var filePath = Path.Combine(uploadFolder, fileName);
 
-                    // file save
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         CoverImage.CopyTo(stream);
                     }
 
-                    // relative path save database me
                     album.CoverImageUrl = "/uploads/albums/" + fileName;
                 }
-
 
                 db.tbl_Albums.Add(album);
                 db.SaveChanges();
                 return RedirectToAction("Albums");
-
             }
-                var albums = db.tbl_Albums
-                               .Include(a => a.tbl_Artists)
-                               .Include(a => a.tbl_Category)
-                               .ToList();
 
-                ViewBag.Artists = db.tbl_Artists.ToList();
-                ViewBag.Categories = db.tbl_Category.ToList();
+            // ModelState invalid hone par errors collect karo
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                          .Select(e => e.ErrorMessage)
+                                          .ToList();
+            ViewBag.Errors = errors;
 
-                return View(albums);
-            
+            var albums = db.tbl_Albums
+                           .Include(a => a.tbl_Artists)
+                           .Include(a => a.tbl_Category)
+                           .ToList();
+
+            ViewBag.Artists = db.tbl_Artists.ToList();
+            ViewBag.Categories = db.tbl_Category.ToList();
+
+            return View(albums);
         }
+
 
         // Edit Album (GET)
         [HttpGet]
@@ -89,12 +86,15 @@ namespace DvdStore.Controllers
             var album = db.tbl_Albums.FirstOrDefault(a => a.AlbumID == id);
             if (album == null) return NotFound();
 
+            ViewBag.Artists = db.tbl_Artists.ToList();
+            ViewBag.Categories = db.tbl_Category.ToList();
+
             return View(album);
         }
 
         // Edit Album (POST)
         [HttpPost]
-        public IActionResult EditAlbum(Albums model)
+        public IActionResult EditAlbum(Albums model, IFormFile? CoverImage)
         {
             if (ModelState.IsValid)
             {
@@ -106,11 +106,37 @@ namespace DvdStore.Controllers
                     album.CategoryID = model.CategoryID;
                     album.ReleaseDate = model.ReleaseDate;
                     album.Description = model.Description;
-                    album.CoverImageUrl = model.CoverImageUrl;
+
+                    // agar nayi image upload hui hai
+                    if (CoverImage != null && CoverImage.Length > 0)
+                    {
+                        var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "albums");
+
+                        if (!Directory.Exists(uploadFolder))
+                        {
+                            Directory.CreateDirectory(uploadFolder);
+                        }
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(CoverImage.FileName);
+                        var filePath = Path.Combine(uploadFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            CoverImage.CopyTo(stream);
+                        }
+
+                        album.CoverImageUrl = "/uploads/albums/" + fileName;
+                    }
+
                     db.SaveChanges();
                 }
                 return RedirectToAction("Albums");
             }
+
+            // agar validation fail ho to dropdowns wapas bhejo
+            ViewBag.Artists = db.tbl_Artists.ToList();
+            ViewBag.Categories = db.tbl_Category.ToList();
+
             return View(model);
         }
 

@@ -6,7 +6,7 @@
 
 <h2>Edit Album</h2>
 
-<form asp-action="EditAlbum" method="post">
+<form asp-action="EditAlbum" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="AlbumID" />
 
     <div class="mb-3">
@@ -15,14 +15,23 @@
     </div>
 
     <div class="mb-3">
-        <label>Artist ID</label>
-        <input asp-for="ArtistID" class="form-control" />
+        <label>Artist</label>
+        <select asp-for="ArtistID" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Artists, "ArtistID", "ArtistName", Model.ArtistID))">
+            <option value="">-- Select Artist --</option>
+        </select>
+        <span asp-validation-for="ArtistID" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Category ID</label>
-        <input asp-for="CategoryID" class="form-control" />
+        <label>Category</label>
+        <select asp-for="CategoryID" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Categories, "CategoryID", "CategoryName", Model.CategoryID))">
+            <option value="">-- Select Category --</option>
+        </select>
+        <span asp-validation-for="CategoryID" class="text-danger"></span>
     </div>
+
 
     <div class="mb-3">
         <label>Release Date</label>
@@ -30,8 +39,16 @@
     </div>
 
     <div class="mb-3">
-        <label>Cover Image URL</label>
-        <input asp-for="CoverImageUrl" class="form-control" />
+        <label>Upload New Image (optional)</label>
+        <input type="file" name="CoverImage" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+        {
+            <p>Current Image:</p>
+            <img src="@Model.CoverImageUrl" alt="Cover" style="height:80px;" />
+        }
     </div>
 
     <div class="mb-3">

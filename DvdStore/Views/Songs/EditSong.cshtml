@@ -1,0 +1,57 @@
+﻿@model DvdStore.Models.Songs
+@{
+    Layout = "Dashboard";
+    ViewBag.Title = "Edit Song";
+}
+
+<h2>Edit Song</h2>
+
+<form asp-action="EditSong" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="SongID" />
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Song Title</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label>Duration</label>
+            <input asp-for="Duration" type="time" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label>Album</label>
+            <select asp-for="AlbumID" class="form-control" asp-items="@(new SelectList(ViewBag.Albums, "AlbumID", "Title", Model.AlbumID))">
+                <option value="">-- Select Album --</option>
+            </select>
+            <span asp-validation-for="AlbumID" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3">
+            <label>Upload New File (optional)</label>
+            <input type="file" name="AudioFile" class="form-control" />
+        </div>
+
+        <div class="col-md-12 mt-2">
+            @if (!string.IsNullOrEmpty(Model.FileUrl))
+            {
+                <p>Current File:</p>
+                <audio controls src="@Model.FileUrl" style="max-width:250px;"></audio>
+            }
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <button type="submit" class="btn btn-primary">Update Song</button>
+            <a asp-action="Songs" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

@@ -5,6 +5,17 @@
 }
 
 <h2>Manage Albums</h2>
+@if (ViewBag.Errors != null && ((List<string>)ViewBag.Errors).Any())
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in (List<string>)ViewBag.Errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
 
 <!-- Add New Album Form -->
 <form asp-action="Albums" method="post" enctype="multipart/form-data" class="mb-3">
@@ -18,7 +29,7 @@
             <label>Artist</label>
             <select name="ArtistID" class="form-control">
                 <option value="">-- Select Artist --</option>
-                @foreach (var artist in ViewBag.Artists as List<DvdStore.Models.Artists>)
+                @foreach (var artist in (ViewBag.Artists as List<DvdStore.Models.Artists> ?? new List<DvdStore.Models.Artists>()))
                 {
                     <option value="@artist.ArtistID">@artist.ArtistName</option>
                 }
@@ -29,7 +40,7 @@
             <label>Category</label>
             <select name="CategoryID" class="form-control">
                 <option value="">-- Select Category --</option>
-                @foreach (var category in ViewBag.Categories as List<DvdStore.Models.Category>)
+                @foreach (var category in (ViewBag.Categories as List<DvdStore.Models.Category> ?? new List<DvdStore.Models.Category>()))
                 {
                     <option value="@category.CategoryID">@category.CategoryName</option>
                 }
@@ -83,7 +94,7 @@
                     <td>@a.Title</td>
                     <td>@a.tbl_Artists?.ArtistName</td>
                     <td>@a.tbl_Category?.CategoryName</td>
-                    <td>@a.ReleaseDate?.ToString("yyyy-MM-dd")</td>
+                    <td>@a.ReleaseDate.ToString("yyyy-MM-dd")</td>
                     <td>
                         @if (!string.IsNullOrEmpty(a.CoverImageUrl))
                         {

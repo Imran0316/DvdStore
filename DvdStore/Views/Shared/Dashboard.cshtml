@@ -75,6 +75,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
                             Albums
                         </a>
+                        <a class="nav-link" asp-controller="Songs" asp-action="Songs">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            Add Songs
+                        </a>
                         <a class="nav-link" asp-controller="Admin" asp-action="users">
                             <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                             Users
@@ -124,3 +128,5 @@
     <script src="~/js/scripts.js"></script>
 </body>
 </html>
+
+@RenderSection("Scripts", required: false)
