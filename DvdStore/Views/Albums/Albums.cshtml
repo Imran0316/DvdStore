@@ -94,7 +94,7 @@
                     <td>@a.Title</td>
                     <td>@a.tbl_Artists?.ArtistName</td>
                     <td>@a.tbl_Category?.CategoryName</td>
-                    <td>@a.ReleaseDate.ToString("yyyy-MM-dd")</td>
+                    <td>@a.ReleaseDate</td>
                     <td>
                         @if (!string.IsNullOrEmpty(a.CoverImageUrl))
                         {
@@ -121,3 +121,4 @@
         }
     </tbody>
 </table>
+

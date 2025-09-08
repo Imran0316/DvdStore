@@ -4,6 +4,7 @@ using DvdStore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdStore.Migrations
 {
     [DbContext(typeof(DvdDbContext))]
-    partial class DvdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250907105956_ProductUpdated")]
+    partial class ProductUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,10 +33,10 @@ namespace DvdStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AlbumID"));
 
-                    b.Property<int?>("ArtistID")
+                    b.Property<int>("ArtistID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.Property<string>("CoverImageUrl")
@@ -44,9 +47,10 @@ namespace DvdStore.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ReleaseDate")
+                    b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
@@ -287,7 +291,7 @@ namespace DvdStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"));
 
-                    b.Property<int>("AlbumID")
+                    b.Property<int?>("AlbumID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -315,10 +319,6 @@ namespace DvdStore.Migrations
 
                     b.Property<int?>("SupplierID")
                         .HasColumnType("int");
-
-                    b.Property<string>("TrailerUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("ProductID");
 
@@ -481,11 +481,15 @@ namespace DvdStore.Migrations
                 {
                     b.HasOne("DvdStore.Models.Artists", "tbl_Artists")
                         .WithMany()
-                        .HasForeignKey("ArtistID");
+                        .HasForeignKey("ArtistID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DvdStore.Models.Category", "tbl_Category")
                         .WithMany()
-                        .HasForeignKey("CategoryID");
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("tbl_Artists");
 
@@ -571,9 +575,7 @@ namespace DvdStore.Migrations
                 {
                     b.HasOne("DvdStore.Models.Albums", "tbl_Albums")
                         .WithMany()
-                        .HasForeignKey("AlbumID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AlbumID");
 
                     b.HasOne("DvdStore.Models.Producers", "tbl_Producers")
                         .WithMany()

@@ -59,7 +59,7 @@ namespace DvdStore.Controllers
                 return RedirectToAction("Albums");
             }
 
-            // ModelState invalid hone par errors collect karo
+            // ModelState invalid hone par errors 
             var errors = ModelState.Values.SelectMany(v => v.Errors)
                                           .Select(e => e.ErrorMessage)
                                           .ToList();

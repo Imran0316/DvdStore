@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DvdStore.Models
@@ -8,27 +9,25 @@ namespace DvdStore.Models
         [Key]
         public int AlbumID { get; set; }
 
-        [Required(ErrorMessage = "Album title is required")]
+        [Required]
         [StringLength(200)]
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
-        [Required(ErrorMessage = "Artist is required")]
-        public int ArtistID { get; set; }
+        public int? ArtistID { get; set; }
         [ForeignKey("ArtistID")]
+        [ValidateNever]
         public Artists? tbl_Artists { get; set; }
 
-        [Required(ErrorMessage = "Category is required")]
-        public int CategoryID { get; set; }
+      
+        public int? CategoryID { get; set; }
         [ForeignKey("CategoryID")]
+        [ValidateNever]
         public Category? tbl_Category { get; set; }
 
-        [Required(ErrorMessage = "Release date is required")]
-        public DateTime ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
 
-        [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string? Description { get; set; }  // nvarchar(max) banega
 
-        // Optional, kyunki ye controller me file upload ke through set hota hai
         [StringLength(500)]
         public string? CoverImageUrl { get; set; }
 

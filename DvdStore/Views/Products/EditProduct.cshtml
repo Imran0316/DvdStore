@@ -1,0 +1,94 @@
+﻿@model DvdStore.Models.Products
+
+@{
+    Layout="Dashboard";
+    ViewData["Title"] = "Edit Product";
+}
+
+<h2>Edit Product</h2>
+
+<form asp-action="EditProduct" enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="ProductID" />
+
+    <!-- Album -->
+    <div class="mb-3">
+        <label asp-for="AlbumID" class="form-label"></label>
+        <select asp-for="AlbumID" class="form-select"
+                asp-items="@(new SelectList(ViewBag.Albums, "AlbumID", "Title", Model?.AlbumID))">
+            <option value="">-- Select Album --</option>
+        </select>
+        <span asp-validation-for="AlbumID" class="text-danger"></span>
+    </div>
+
+    <!-- Supplier -->
+    <div class="mb-3">
+        <label asp-for="SupplierID" class="form-label"></label>
+        <select asp-for="SupplierID" class="form-select"
+                asp-items="@(new SelectList(ViewBag.Suppliers, "SupplierID", "SupplierName", Model?.SupplierID))">
+            <option value="">-- Select Supplier --</option>
+        </select>
+        <span asp-validation-for="SupplierID" class="text-danger"></span>
+    </div>
+
+    <!-- Producer -->
+    <div class="mb-3">
+        <label asp-for="ProducerID" class="form-label"></label>
+        <select asp-for="ProducerID" class="form-select"
+                asp-items="@(new SelectList(ViewBag.Producers, "ProducerID", "ProducerName", Model?.ProducerID))">
+            <option value="">-- Select Producer --</option>
+        </select>
+        <span asp-validation-for="ProducerID" class="text-danger"></span>
+    </div>
+
+
+    <!-- SKU -->
+    <div class="mb-3">
+        <label asp-for="SKU" class="form-label"></label>
+        <input asp-for="SKU" class="form-control" value="@Model?.SKU" />
+        <span asp-validation-for="SKU" class="text-danger"></span>
+    </div>
+
+    <!-- Stock Quantity -->
+    <div class="mb-3">
+        <label asp-for="StockQuantity" class="form-label"></label>
+        <input asp-for="StockQuantity" class="form-control" value="@Model?.StockQuantity" />
+        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+    </div>
+
+    <!-- Price -->
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" value="@Model?.Price" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <!-- Product Image -->
+    <div class="mb-3">
+        <label asp-for="ProductImageUrl" class="form-label"></label>
+        @if (Model != null && !string.IsNullOrEmpty(Model.ProductImageUrl))
+        {
+            <div class="mb-2">
+                <img src="@Model.ProductImageUrl" alt="Product Image" width="120" />
+            </div>
+        }
+        <input type="file" name="ProductImage" class="form-control" />
+
+        <span asp-validation-for="ProductImageUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Trailer URL -->
+    <div class="mb-3">
+        <label asp-for="TrailerUrl" class="form-label"></label>
+        <input asp-for="TrailerUrl" type="file" class="form-control" value="@Model?.TrailerUrl" />
+        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Is Active -->
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>

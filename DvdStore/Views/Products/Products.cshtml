@@ -1,0 +1,150 @@
+﻿@model IEnumerable<DvdStore.Models.Products>
+@{
+    Layout = "Dashboard";
+    ViewBag.Title = "Products";
+}
+
+<h2>Manage Products</h2>
+
+<!-- Add New Product Form -->
+<form asp-action="Products" method="post" enctype="multipart/form-data" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Album</label>
+            <select name="AlbumID" class="form-control">
+                <option value="">-- Select Album (optional) --</option>
+                @foreach (var album in (ViewBag.Albums as List<DvdStore.Models.Albums>))
+                {
+                    <option value="@album.AlbumID">@album.Title</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Supplier</label>
+            <select name="SupplierID" class="form-control">
+                <option value="">-- Select Supplier --</option>
+                @foreach (var s in (ViewBag.Suppliers as List<DvdStore.Models.Suppliers>))
+                {
+                    <option value="@s.SupplierID">@s.SupplierName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Producer</label>
+            <select name="ProducerID" class="form-control">
+                <option value="">-- Select Producer --</option>
+                @foreach (var p in (ViewBag.Producers as List<DvdStore.Models.Producers>))
+                {
+                    <option value="@p.ProducerID">@p.ProducerName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>SKU</label>
+            <input name="SKU" class="form-control" placeholder="Unique Code" />
+        </div>
+
+        <div class="col-md-3 mt-2">
+            <label>Stock Quantity</label>
+            <input name="StockQuantity" type="number" class="form-control" value="0" />
+        </div>
+
+        <div class="col-md-3 mt-2">
+            <label>Price</label>
+            <input name="Price" type="number" step="0.01" class="form-control" required />
+        </div>
+
+        <div class="col-md-3 mt-2">
+            <label>Product Image</label>
+            <input type="file" name="ProductImage" class="form-control" />
+        </div>
+        <div class="col-md-3 mt-2">
+            <label>Product Trailer</label>
+            <input type="file" name="TrailerUrl" class="form-control" />
+        </div>
+
+        <div class="col-md-3 mt-2">
+            <label>Status</label>
+            <select name="IsActive" class="form-control">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <button type="submit" class="btn btn-success">Add Product</button>
+        </div>
+    </div>
+</form>
+
+<!-- Products Table -->
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Album</th>
+            <th>Supplier</th>
+            <th>Producer</th>
+            <th>SKU</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Trailer</th>
+            <th>Status</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int count = 1;
+            foreach (var p in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@p.tbl_Albums?.Title</td>
+                    <td>@p.tbl_Suppliers?.SupplierName</td>
+                    <td>@p.tbl_Producers?.ProducerName</td>
+                    <td>@p.SKU</td>
+                    <td>@p.StockQuantity</td>
+                    <td>@p.Price</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(p.ProductImageUrl))
+                        {
+                            <img src="@p.ProductImageUrl" style="height:50px;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Image</span>
+                        }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(p.TrailerUrl))
+                        {
+                            <video src="@p.TrailerUrl" style="height:50px;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Trailer</span>
+                        }
+                    </td>
+                    <td>@(p.IsActive ? "Active" : "Inactive")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="EditProduct" asp-route-id="@p.ProductID">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteProduct" asp-route-id="@p.ProductID" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="10" class="text-center text-muted">No products found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
