@@ -20,18 +20,24 @@ namespace DvdStore.Controllers
 
 
         [HttpPost]
-        public IActionResult Producer(Producers p)
+        public IActionResult Producer(string ProducerName, string ContactInfo)
         {
             if (ModelState.IsValid)
             {
-                db.tbl_Producers.Add(p);
-                db.SaveChanges();
-                return RedirectToAction();
+                var producer = new Producers
+                {
+                    ProducerName = ProducerName,
+                    ContactInfo = ContactInfo,
+                    CreatedAt = DateTime.Now
+                };
 
+                db.tbl_Producers.Add(producer);
+                db.SaveChanges();
+                return RedirectToAction("Producer");
             }
             return View();
         }
-        //Edit Suppliers
+        //Edit producer
         [HttpGet]
         public IActionResult EditProducer(int id)
         {

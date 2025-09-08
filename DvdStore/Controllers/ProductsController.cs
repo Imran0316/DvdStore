@@ -13,27 +13,30 @@ namespace DvdStore.Controllers
             db = context;
         }
 
-        // 🟢 Show All Products
+        // In ProductsController.cs - Update the Products action
+        [HttpGet]
         public IActionResult Products()
         {
-
             ViewBag.Albums = db.tbl_Albums.ToList();
             ViewBag.Suppliers = db.tbl_Suppliers.ToList();
             ViewBag.Producers = db.tbl_Producers.ToList();
 
-            return View(db.tbl_Products
+            var products = db.tbl_Products
                              .Include(p => p.tbl_Albums)
                              .Include(p => p.tbl_Suppliers)
                              .Include(p => p.tbl_Producers)
-                             .ToList());
+                             .Where(p => p.IsActive) // Only show active products
+                             .ToList();
+
+            return View(products);
         }
 
-        // 🟢 Add New Product (POST)
         [HttpPost]
-        public IActionResult Products(Products product, IFormFile ProductImage)
+        public async Task<IActionResult> Products(Products product, IFormFile ProductImage)
         {
             if (ModelState.IsValid)
             {
+                // Handle image upload
                 if (ProductImage != null && ProductImage.Length > 0)
                 {
                     var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
@@ -47,26 +50,29 @@ namespace DvdStore.Controllers
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        ProductImage.CopyTo(stream);
+                        await ProductImage.CopyToAsync(stream);
                     }
 
                     product.ProductImageUrl = "/uploads/products/" + fileName;
                 }
 
                 db.tbl_Products.Add(product);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Products");
             }
 
-            // ❌ yahan galat view bhej rahe ho
-            // return View(db.tbl_Products.ToList());
-
-            // ✅ isko product add form wapas bhejna chahiye
+            // If we got this far, something failed; redisplay form
             ViewBag.Albums = db.tbl_Albums.ToList();
             ViewBag.Suppliers = db.tbl_Suppliers.ToList();
             ViewBag.Producers = db.tbl_Producers.ToList();
 
-            return View(product); // 👈 user ko form + validation errors dikhaye
+            var products = db.tbl_Products
+                             .Include(p => p.tbl_Albums)
+                             .Include(p => p.tbl_Suppliers)
+                             .Include(p => p.tbl_Producers)
+                             .ToList();
+
+            return View(products);
         }
 
         [HttpGet]

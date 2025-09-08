@@ -17,19 +17,38 @@ namespace DvdStore.Controllers
             
         }
 
-        
-        [HttpPost]
-        public IActionResult Suppliers(Suppliers sp)
-        {
-            if (ModelState.IsValid)
-            {
-                db.tbl_Suppliers.Add(sp);
-                db.SaveChanges();
-                return RedirectToAction();
 
+        [HttpPost]
+        public IActionResult Suppliers(string SupplierName, string ContactInfo)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var supplier = new Suppliers
+                    {
+                        SupplierName = SupplierName,
+                        ContactInfo = ContactInfo,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    db.tbl_Suppliers.Add(supplier);
+                    db.SaveChanges();
+
+                    ViewBag.Success = "Supplier added successfully!";
+                    return RedirectToAction("Suppliers"); // Redirect to refresh the list
+                }
             }
-            return View();
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error adding supplier: " + ex.Message;
+            }
+
+            // If we get here, something went wrong - redisplay the form
+            var suppliers = db.tbl_Suppliers.ToList();
+            return View(suppliers);
         }
+
         //Edit Suppliers
         [HttpGet]
         public IActionResult EditSuppliers(int id)

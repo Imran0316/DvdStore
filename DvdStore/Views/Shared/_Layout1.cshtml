@@ -1,142 +1,927 @@
-﻿@*
-    Location: /Views/Shared/_Layout1.cshtml
-    Purpose: Main layout used by views. DO NOT render this directly.
-*@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zxx">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Anime Template">
-    <meta name="keywords" content="Anime, unica, creative, html">
+    <meta name="description" content="DVD, Games & Movies Store">
+    <meta name="keywords" content="DVD, Games, Movies, Entertainment">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@ViewData["Title"] - Anime Template</title>
+    <title>@ViewData["Title"] - Entertainment Store</title>
 
-    <!-- Google Fonts -->
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- CSS Styles -->
-    <link rel="stylesheet" href="~/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="~/css/plyr.css" type="text/css">
-    <link rel="stylesheet" href="~/css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="~/css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="~/css/style.css" type="text/css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #e53637;
+            --secondary-color: #0c0c0c;
+            --text-color: #3d3d3d;
+            --bg-light: #f8f9fa;
+            --dark-bg: #0b0c2a;
+        }
+
+        body {
+            font-family: 'Mulish', sans-serif;
+            color: var(--text-color);
+            background-color: #ffffff;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1b3a 100%);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white !important;
+            text-decoration: none;
+        }
+
+            .logo span {
+                color: var(--primary-color);
+            }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 10px 15px !important;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 5px;
+            margin: 0 2px;
+        }
+
+            .nav-link:hover, .nav-link.active {
+                color: var(--primary-color) !important;
+                transform: translateY(-2px);
+                background: rgba(255,255,255,0.1);
+            }
+
+            .nav-link.active {
+                background: rgba(229, 54, 55, 0.2);
+                color: var(--primary-color) !important;
+            }
+
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+
+            .nav-link:hover::after, .nav-link.active::after {
+                width: 80%;
+            }
+
+        .cart-count {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .user-greeting {
+            color: #ddd;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(11, 12, 42, 0.9), rgba(26, 27, 58, 0.9)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+        }
+
+            .hero h1 {
+                font-family: 'Oswald', sans-serif;
+                font-size: 3.5rem;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+                margin-bottom: 30px;
+                opacity: 0.9;
+            }
+
+        /* Improved Product Cards */
+        .product__item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            margin-bottom: 30px;
+        }
+
+            .product__item:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            }
+
+        .product__item__pic {
+            height: 280px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Ensure images fit properly */
+        .set-bg {
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
+        /* Price badge */
+        .ep {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 2;
+        }
+
+        /* Add to cart overlay */
+        .view {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            background: rgba(229, 54, 55, 0.95);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .product__item:hover .view {
+            bottom: 0;
+        }
+
+        .product__item__text {
+            padding: 20px;
+        }
+
+            .product__item__text h5 a {
+                color: var(--dark-bg);
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 18px;
+                margin-bottom: 10px;
+                display: block;
+                transition: color 0.3s ease;
+            }
+
+                .product__item__text h5 a:hover {
+                    color: var(--primary-color);
+                }
+
+        .product__price {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .add-cart-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+            .add-cart-btn:hover {
+                color: #c52a2b;
+                transform: translateX(5px);
+            }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--secondary-color);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 50px;
+        }
+
+            .footer h5 {
+                color: var(--primary-color);
+                margin-bottom: 20px;
+                font-family: 'Oswald', sans-serif;
+            }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+
+            .footer-links a {
+                color: #ddd;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .footer-links a:hover {
+                    color: var(--primary-color);
+                }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+            .social-links a {
+                color: white;
+                font-size: 20px;
+                transition: color 0.3s ease;
+            }
+
+                .social-links a:hover {
+                    color: var(--primary-color);
+                }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background: #c52a2b;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(229, 54, 55, 0.3);
+            }
+
+        /* Section Titles */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+            .section-title h4 {
+                font-family: 'Oswald', sans-serif;
+                font-size: 32px;
+                color: var(--dark-bg);
+                margin-bottom: 15px;
+                position: relative;
+                display: inline-block;
+            }
+
+                .section-title h4::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 60px;
+                    height: 3px;
+                    background: var(--primary-color);
+                }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-link {
+                padding: 8px 12px !important;
+            }
+
+            .product__item__pic {
+                height: 220px;
+            }
+
+        }
+
+        /* Professional Navbar Styles */
+        .navbar-nav .nav-item {
+            margin: 0 5px;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 12px 18px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
+                color: var(--primary-color) !important;
+            }
+
+            .navbar-nav .nav-link.active {
+                background: rgba(229, 54, 55, 0.2);
+                box-shadow: 0 4px 12px rgba(229, 54, 55, 0.3);
+            }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background: var(--dark-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .dropdown-item {
+            color: #ddd;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .dropdown-item:hover {
+                background: rgba(229, 54, 55, 0.2);
+                color: var(--primary-color);
+            }
+
+        /* User greeting */
+        .user-greeting {
+            color: #ddd !important;
+            font-size: 14px;
+            padding: 10px 15px !important;
+        }
+
+            .user-greeting:hover {
+                color: var(--primary-color) !important;
+                background: none !important;
+                transform: none !important;
+            }
+
+        /* Cart icon with badge */
+        .nav-link.position-relative {
+            padding: 12px 18px !important;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Navbar brand logo */
+        .logo {
+            font-size: 24px;
+            padding: 10px 0;
+        }
+
+            .logo i {
+                color: var(--primary-color);
+            }
+
+        /* Toast Notifications */
+        .custom-toast {
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+        }
+
+            .custom-toast.alert-success {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+            }
+
+            .custom-toast.alert-danger {
+                background: linear-gradient(135deg, #dc3545, #fd7e14);
+                color: white;
+            }
+
+            .custom-toast .btn-close {
+                filter: invert(1);
+            }
+
+
+        /* Add this to your CSS */
+        .add-to-cart-form {
+            display: inline;
+        }
+
+        .add-cart-btn {
+            background: none !important;
+            border: none !important;
+            color: #e53637 !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            font: inherit !important;
+            text-decoration: none !important;
+            display: inline !important;
+        }
+
+            .add-cart-btn:hover {
+                color: #c52a2b !important;
+                text-decoration: underline !important;
+            }
+
+            /* Remove any outline on focus for better appearance */
+            .add-cart-btn:focus {
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+        /* Add this to your CSS section */
+        a[href="#"] {
+            outline: none !important;
+        }
+
+            a[href="#"]:focus {
+                outline: none !important;
+            }
+
+        /* Prevent default behavior for hash links */
+        a[href="#"] {
+            cursor: pointer;
+        }
+
+        /* Specific style for checkout button */
+        .checkout-btn {
+            text-decoration: none !important;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+            .checkout-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(229, 54, 55, 0.3);
+            }
+
+        .login-prompt {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Page Preloader -->
-    <div id="preloder">
-        <div class="loader"></div>
-    </div>
-
-    <!-- Header Section Begin -->
+    <!-- Header Section -->
     <header class="header">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-2">
-                    <div class="header__logo">
-                        <a asp-controller="Home" asp-action="Index">
-                            <img src="~/img/logo.png" alt="Logo">
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="header__nav">
-                        <nav class="header__menu mobile-menu">
-                            <ul>
-                                <li class="active"><a asp-controller="Home" asp-action="Index">Homepage</a></li>
-                                <li>
-                                    <a href="#">Categories <span class="arrow_carrot-down"></span></a>
-                                    <ul class="dropdown">
-                                        <li><a asp-controller="Categories" asp-action="Index">Categories</a></li>
-                                        <li><a asp-controller="Anime" asp-action="Details">Anime Details</a></li>
-                                        <li><a asp-controller="Anime" asp-action="Watching">Anime Watching</a></li>
-                                        <li><a asp-controller="Blog" asp-action="Details">Blog Details</a></li>
-                                    </ul>
-                                </li>
-                                <li><a asp-controller="Blog" asp-action="Index">my Blog</a></li>
-                                <li><a asp-controller="Contact" asp-action="Index">Contacts</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="header__right">
-                        <a href="#" class="search-switch"><span class="icon_search"></span></a>
-                        <a asp-controller="Auth" class="text-white" asp-action="Register">Sign Up</a>
-                        <a asp-controller="Auth" asp-action="Login">Login</a>
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand logo" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-play-circle me-2"></i>Entertainment<span>Hub</span>
+                    </a>
 
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fas fa-home me-1"></i> Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Products">
+                                    <i class="fas fa-shopping-bag me-1"></i> Products
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-list me-1"></i> Categories
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Games"><i class="fas fa-gamepad me-2"></i>Games</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Movies"><i class="fas fa-film me-2"></i>Movies</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Music"><i class="fas fa-music me-2"></i>Music</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Index"><i class="fas fa-grid me-2"></i>All Categories</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-nav ms-auto">
+                            @if (Context.Session.GetInt32("UserId") != null)
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link user-greeting">
+                                        <i class="fas fa-user-circle me-1"></i>
+                                        Hello, @Context.Session.GetString("UserName")
+                                    </span>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link position-relative" asp-controller="Cart" asp-action="Index">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span class="cart-count">@(Context.Session.GetInt32("CartCount") ?? 0)</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Logout">
+                                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Register">
+                                        <i class="fas fa-user-plus me-1"></i> Register
+                                    </a>
+                                </li>
+                            }
+                        </ul>
                     </div>
                 </div>
-            </div>
-            <div id="mobile-menu-wrap"></div>
+            </nav>
         </div>
     </header>
 
-    <!-- Header End -->
-    <!-- ✅ Main View Content -->
+    <!-- Main Content -->
     <main>
         @RenderBody()
     </main>
 
-    <!-- Footer Section Begin -->
+    <!-- Footer Section -->
     <footer class="footer">
-        <div class="page-up">
-            <a href="#" id="scrollToTopButton"><span class="arrow_carrot-up"></span></a>
-        </div>
         <div class="container">
             <div class="row">
-                <div class="col-lg-3">
-                    <div class="footer__logo">
-                        <a asp-controller="Home" asp-action="Index"><img src="~/img/logo.png" alt="Logo"></a>
-                    </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5>EntertainmentHub</h5>
+                    <p>Your one-stop destination for DVDs, games, and movies. Quality entertainment for everyone.</p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="footer__nav">
-                        <ul>
-                            <li class="active"><a asp-controller="Home" asp-action="Index">Homepage</a></li>
-                            <li><a asp-controller="Categories" asp-action="Index">Categories</a></li>
-                            <li><a asp-controller="Blog" asp-action="Index">Our Blog</a></li>
-                            <li><a asp-controller="Contact" asp-action="Index">Contacts</a></li>
-                        </ul>
-                    </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="Products">Products</a></li>
+                        <li><a href="#">Categories</a></li>
+                        <li><a href="#">About Us</a></li>
+                    </ul>
                 </div>
-                <div class="col-lg-3">
-                    <p>
-                        &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved |
-                        Template by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                    </p>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Categories</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Action Games</a></li>
+                        <li><a href="#">Classic Movies</a></li>
+                        <li><a href="#">Music Albums</a></li>
+                        <li><a href="#">New Releases</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Connect With Us</h5>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <p class="mt-3">Email: support@entertainmenthub.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <hr style="border-color: #444;">
+                    <p>&copy; 2024 EntertainmentHub. All rights reserved. Designed with ❤️</p>
                 </div>
             </div>
         </div>
     </footer>
-    <!-- Footer Section End -->
-    <!-- Search model Begin -->
-    <div class="search-model">
-        <div class="h-100 d-flex align-items-center justify-content-center">
-            <div class="search-close-switch"><i class="icon_close"></i></div>
-            <form class="search-model-form">
-                <input type="text" id="search-input" placeholder="Search here.....">
-            </form>
-        </div>
-    </div>
-    <!-- Search model End -->
-    <!-- JS Plugins -->
-    <script src="~/js/jquery-3.3.1.min.js"></script>
-    <script src="~/js/bootstrap.min.js"></script>
-    <script src="~/js/player.js"></script>
-    <script src="~/js/jquery.nice-select.min.js"></script>
-    <script src="~/js/mixitup.min.js"></script>
-    <script src="~/js/jquery.slicknav.js"></script>
-    <script src="~/js/owl.carousel.min.js"></script>
-    <script src="~/js/main.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Simple cart counter animation
+        $(document).ready(function() {
+            $('.add-cart-btn').click(function(e) {
+                e.preventDefault();
+                const form = $(this).closest('form');
+                const productId = form.find('input[name="productId"]').val();
+
+                // Show loading animation
+                $(this).html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+
+                // Submit form
+                $.post(form.attr('action'), form.serialize(), function(response) {
+                    // Update cart count
+                    const currentCount = parseInt($('.cart-count').text()) || 0;
+                    $('.cart-count').text(currentCount + 1);
+
+                    // Show success message
+                    alert('Product added to cart successfully!');
+
+                    // Reset button text
+                    $('.add-cart-btn').html('+ Add To Cart');
+                }).fail(function() {
+                    alert('Error adding product to cart. Please try again.');
+                    $('.add-cart-btn').html('+ Add To Cart');
+                });
+            });
+        });
+    </script>
 
     @RenderSection("Scripts", required: false)
+
+    <script>
+        <script>
+            // Set active navigation link based on current page
+            $(document).ready(function() {
+                var currentUrl = window.location.pathname.toLowerCase();
+
+                $('.nav-link').each(function() {
+                    var linkUrl = $(this).attr('href');
+                    if (linkUrl) {
+                        var cleanLinkUrl = linkUrl.toLowerCase();
+                        if (currentUrl === cleanLinkUrl ||
+                            (cleanLinkUrl !== '/' && currentUrl.startsWith(cleanLinkUrl)) ||
+                            (currentUrl.includes('products') && cleanLinkUrl.includes('products')) ||
+                            (currentUrl.includes('category') && cleanLinkUrl.includes('category'))) {
+                            $(this).addClass('active');
+                        }
+                    }
+                });
+
+                // Working Add to Cart functionality for forms
+                $(document).on('submit', '.add-to-cart-form', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var $form = $(this);
+                    var $button = $form.find('.add-cart-btn');
+                    var originalText = $button.html();
+
+                    // Check if user is logged in
+                    @if (Context.Session.GetInt32("UserId") == null)
+                    {
+                            <text>
+                            showToast('Please login to add items to cart', 'error');
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Login", "Auth")';
+                            }, 2000);
+                            return false;
+                            </text>
+                    }
+
+                    // Show loading animation
+                    $button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+                    $button.prop('disabled', true);
+
+                    // Submit form via AJAX
+                    $.ajax({
+                        url: $form.attr('action'),
+                        type: 'POST',
+                        data: $form.serialize(),
+                        success: function(response) {
+                            // Update cart count
+                            var currentCount = parseInt($('.cart-count').text()) || 0;
+                            $('.cart-count').text(currentCount + 1);
+
+                            // Show success message
+                            showToast('Product added to cart successfully!', 'success');
+
+                            // Reset button after delay
+                            setTimeout(function() {
+                                $button.html(originalText);
+                                $button.prop('disabled', false);
+                            }, 1500);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error adding to cart:', error);
+                            showToast('Error adding product to cart. Please try again.', 'error');
+
+                            // Reset button
+                            $button.html(originalText);
+                            $button.prop('disabled', false);
+                        }
+                    });
+
+                    return false;
+                });
+
+                // Working Add to Cart functionality for buttons
+                $(document).on('click', '.add-cart-btn:not([type="submit"])', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var $button = $(this);
+                    var form = $button.closest('form');
+                    var originalText = $button.html();
+
+                    if (form.length === 0) {
+                        console.error('No form found for Add to Cart button');
+                        return;
+                    }
+
+                    // Check if user is logged in
+                    @if (Context.Session.GetInt32("UserId") == null)
+                    {
+                            <text>
+                            showToast('Please login to add items to cart', 'error');
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Login", "Auth")';
+                            }, 2000);
+                            return false;
+                            </text>
+                    }
+
+                    // Show loading animation
+                    $button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+                    $button.prop('disabled', true);
+
+                    // Submit form via AJAX
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: 'POST',
+                        data: form.serialize(),
+                        success: function(response) {
+                            // Update cart count
+                            var currentCount = parseInt($('.cart-count').text()) || 0;
+                            $('.cart-count').text(currentCount + 1);
+
+                            // Show success message
+                            showToast('Product added to cart successfully!', 'success');
+
+                            // Reset button after delay
+                            setTimeout(function() {
+                                $button.html(originalText);
+                                $button.prop('disabled', false);
+                            }, 1500);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error adding to cart:', error);
+                            showToast('Error adding product to cart. Please try again.', 'error');
+
+                            // Reset button
+                            $button.html(originalText);
+                            $button.prop('disabled', false);
+                        }
+                    });
+                });
+
+                // Toast notification function
+                function showToast(message, type) {
+                    // Remove existing toasts
+                    $('.custom-toast').remove();
+
+                    var toast = $('<div class="custom-toast alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show"></div>')
+                        .html('<i class="fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle') + ' me-2"></i>' + message +
+                              '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>')
+                        .css({
+                            'position': 'fixed',
+                            'top': '20px',
+                            'right': '20px',
+                            'z-index': '9999',
+                            'min-width': '300px',
+                            'box-shadow': '0 5px 15px rgba(0,0,0,0.2)'
+                        });
+
+                    $('body').append(toast);
+
+                    // Auto remove after 3 seconds
+                    setTimeout(function() {
+                        toast.alert('close');
+                    }, 3000);
+                }
+            });
+
+                    
+
+
+
+                // Add this to your existing JavaScript in _Layout1.cshtml
+        $(document).on('submit', '.add-to-cart-form', function(e) {
+            e.preventDefault(); // This stops the form from causing page jump
+
+            var $form = $(this);
+            var $button = $form.find('.add-cart-btn');
+            var originalText = $button.html();
+
+            // Show loading animation
+            $button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+            $button.prop('disabled', true);
+
+            // Submit form via AJAX
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: $form.serialize(),
+                success: function(response) {
+                    // Update cart count
+                    var currentCount = parseInt($('.cart-count').text()) || 0;
+                    $('.cart-count').text(currentCount + 1);
+
+                    // Show success message
+                    showToast('Product added to cart successfully!', 'success');
+
+                    // Reset button after delay
+                    setTimeout(function() {
+                        $button.html(originalText);
+                        $button.prop('disabled', false);
+                    }, 1500);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error adding to cart:', error);
+                    showToast('Error adding product to cart. Please try again.', 'error');
+
+                    // Reset button
+                    $button.html(originalText);
+                    $button.prop('disabled', false);
+                }
+            });
+
+            return false; // Prevent default form submission
+        });
+
+
+
+
+                // Add this to your existing JavaScript
+        $(document).ready(function() {
+            // Prevent default behavior for hash links
+            $('a[href="#"]').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            });
+
+            // Specific fix for checkout button
+            $('.checkout-btn').on('click', function(e) {
+                var href = $(this).attr('href');
+                if (href === '#' || href === 'javascript:void(0)') {
+                    e.preventDefault();
+                    // If it's a checkout button, navigate to checkout
+                    if ($(this).attr('asp-controller') === 'Checkout') {
+                        window.location.href = '@Url.Action("ReviewOrder", "Checkout")';
+                    }
+                }
+            });
+        });
+    </script>
+
 
 </body>
 </html>

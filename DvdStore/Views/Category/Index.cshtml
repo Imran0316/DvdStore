@@ -1,0 +1,188 @@
+﻿@model IEnumerable<DvdStore.Models.Category>
+@{
+    ViewData["Title"] = "Browse Categories";
+    Layout = "_Layout1";
+}
+
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="hero__text">
+                    <h2>Browse Categories</h2>
+                    <p>Discover our wide range of entertainment categories</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <!-- Category Filters -->
+            <div class="col-lg-3 col-md-4">
+                <div class="filter-widget">
+                    <h4>Product Types</h4>
+                    <div class="fw-type">
+                        <a href="@Url.Action("Games", "Category")" class="filter-btn">
+                            <i class="fas fa-gamepad"></i> Games
+                        </a>
+                        <a href="@Url.Action("Movies", "Category")" class="filter-btn">
+                            <i class="fas fa-film"></i> Movies
+                        </a>
+                        <a href="@Url.Action("Music", "Category")" class="filter-btn">
+                            <i class="fas fa-music"></i> Music
+                        </a>
+                    </div>
+                </div>
+
+                <div class="filter-widget">
+                    <h4>All Categories</h4>
+                    <ul class="category-list">
+                        @foreach (var category in Model)
+                        {
+                            <li>
+                                <a href="@Url.Action("Products", "Category", new { id = category.CategoryID })">
+                                    @category.CategoryName
+                                    <span>@category.Description</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title">
+                            <h4>Welcome to Our Store</h4>
+                            <p>Browse through our categories or use the filters to find your favorite entertainment products.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="category-card">
+                            <i class="fas fa-gamepad fa-3x"></i>
+                            <h5>Video Games</h5>
+                            <p>Latest games for all platforms</p>
+                            <a href="@Url.Action("Games", "Category")" class="btn btn-sm btn-primary">Browse Games</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="category-card">
+                            <i class="fas fa-film fa-3x"></i>
+                            <h5>Movies & DVDs</h5>
+                            <p>Classic and new releases</p>
+                            <a href="@Url.Action("Movies", "Category")" class="btn btn-sm btn-primary">Browse Movies</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="category-card">
+                            <i class="fas fa-music fa-3x"></i>
+                            <h5>Music & Albums</h5>
+                            <p>CDs and digital music</p>
+                            <a href="@Url.Action("Music", "Category")" class="btn btn-sm btn-primary">Browse Music</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .filter-widget {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+        .filter-widget h4 {
+            color: #0b0c2a;
+            margin-bottom: 15px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+    .fw-type {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #0b0c2a;
+        transition: all 0.3s ease;
+    }
+
+        .filter-btn:hover {
+            border-color: #e53637;
+            background: #fff5f5;
+            transform: translateX(5px);
+        }
+
+    .category-list {
+        list-style: none;
+        padding: 0;
+    }
+
+        .category-list li {
+            margin-bottom: 8px;
+        }
+
+        .category-list a {
+            display: block;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #0b0c2a;
+            transition: all 0.3s ease;
+        }
+
+            .category-list a:hover {
+                background: #e53637;
+                color: white;
+            }
+
+        .category-list span {
+            font-size: 12px;
+            color: #6c757d;
+            display: block;
+        }
+
+    .category-card {
+        text-align: center;
+        padding: 30px 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .category-card i {
+            color: #e53637;
+            margin-bottom: 15px;
+        }
+
+        .category-card h5 {
+            font-family: 'Oswald', sans-serif;
+            margin-bottom: 10px;
+        }
+</style>

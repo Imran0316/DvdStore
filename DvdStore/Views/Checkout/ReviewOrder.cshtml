@@ -1,0 +1,328 @@
+﻿@model DvdStore.Models.Cart
+@{
+    ViewData["Title"] = "Review Order";
+    Layout = "_Layout1";
+}
+
+<section class="checkout spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="checkout__title">
+                    <h2><i class="fas fa-shopping-cart me-2"></i>Review Your Order</h2>
+                    <p>Please review your items before proceeding to payment</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Order Summary -->
+            <div class="col-lg-8">
+                <div class="checkout__order">
+                    <h4 class="section-subtitle">Order Summary</h4>
+                    <div class="checkout__order__products">
+                        <span>Product</span>
+                        <span>Total</span>
+                    </div>
+
+                    <ul class="checkout__items">
+                        @foreach (var item in Model.tbl_CartItems)
+                        {
+                            <li class="checkout__item">
+                                <div class="item__info">
+                                    <img src="@item.tbl_Products.ProductImageUrl" alt="@item.tbl_Products.tbl_Albums?.Title"
+                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                    <div class="item__details">
+                                        <h6>@item.tbl_Products.tbl_Albums?.Title</h6>
+                                        <p>Quantity: @item.Quantity × $@item.tbl_Products.Price</p>
+                                        <p class="item__artist">By: @item.tbl_Products.tbl_Producers?.ProducerName</p>
+                                    </div>
+                                </div>
+                                <div class="item__total">
+                                    $@(item.tbl_Products.Price* item.Quantity)
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="checkout__totals">
+                        <div class="checkout__order__subtotal">
+                            <span>Subtotal</span>
+                            <span>$@Model.tbl_CartItems.Sum(i => i.tbl_Products.Price * i.Quantity)</span>
+                        </div>
+                        <div class="checkout__order__shipping">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="checkout__order__total">
+                            <span>Total</span>
+                            <span class="total-price">$@Model.tbl_CartItems.Sum(i => i.tbl_Products.Price * i.Quantity)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping & Payment -->
+            <div class="col-lg-4">
+                <div class="checkout__address">
+                    <h4 class="section-subtitle">Shipping & Payment</h4>
+                    <form asp-action="ProcessOrder" method="post" id="checkoutForm">
+                        <div class="form-section">
+                            <h5><i class="fas fa-truck me-2"></i>Shipping Information</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Full Address</label>
+                                <textarea name="shippingAddress" class="form-control" rows="3" required
+                                          placeholder="Enter your complete shipping address including city, state, and zip code"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h5><i class="fas fa-credit-card me-2"></i>Payment Method</h5>
+                            <div class="payment-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="Credit Card" required>
+                                    <label class="form-check-label" for="creditCard">
+                                        <i class="fas fa-credit-card me-2"></i>Credit Card
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="Debit Card">
+                                    <label class="form-check-label" for="debitCard">
+                                        <i class="fas fa-credit-card me-2"></i>Debit Card
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="PayPal">
+                                    <label class="form-check-label" for="paypal">
+                                        <i class="fab fa-paypal me-2"></i>PayPal
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="Cash on Delivery">
+                                    <label class="form-check-label" for="cod">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="jazzcash" value="JazzCash">
+                                    <label class="form-check-label" for="jazzcash">
+                                        <i class="fas fa-mobile-alt me-2"></i>JazzCash
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="easypaisa" value="EasyPaisa">
+                                    <label class="form-check-label" for="easypaisa">
+                                        <i class="fas fa-mobile-alt me-2"></i>EasyPaisa
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <button type="submit" class="checkout-btn w-100">
+                                <i class="fas fa-lock me-2"></i>Place Order - $@Model.tbl_CartItems.Sum(i => i.tbl_Products.Price * i.Quantity)
+                            </button>
+                            <p class="security-note">
+                                <i class="fas fa-shield-alt me-2"></i>Your payment information is secure and encrypted
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .checkout__title {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px 0;
+        background: linear-gradient(135deg, #0b0c2a 0%, #1a1b3a 100%);
+        color: white;
+        border-radius: 15px;
+    }
+
+        .checkout__title h2 {
+            font-family: 'Oswald', sans-serif;
+            margin-bottom: 10px;
+        }
+
+    .section-subtitle {
+        font-family: 'Oswald', sans-serif;
+        color: #0b0c2a;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e53637;
+    }
+
+    .checkout__order {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .checkout__order__products {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 2px solid #ddd;
+        font-weight: 600;
+        color: #0b0c2a;
+    }
+
+    .checkout__items {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .checkout__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item__info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex: 1;
+    }
+
+    .item__details h6 {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #0b0c2a;
+    }
+
+    .item__artist {
+        font-size: 12px;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .item__total {
+        font-weight: 600;
+        color: #e53637;
+        font-size: 16px;
+    }
+
+    .checkout__totals {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #ddd;
+    }
+
+    .checkout__order__subtotal,
+    .checkout__order__shipping,
+    .checkout__order__total {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .checkout__order__total {
+        border-top: 2px solid #e53637;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .total-price {
+        color: #e53637;
+        font-size: 20px;
+    }
+
+    .checkout__address {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .form-section {
+        margin-bottom: 25px;
+    }
+
+        .form-section h5 {
+            color: #0b0c2a;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-check {
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .form-check:hover {
+            border-color: #e53637;
+            background: #fff5f5;
+        }
+
+    .form-check-input:checked {
+        background-color: #e53637;
+        border-color: #e53637;
+    }
+
+    .checkout-btn {
+        background: linear-gradient(135deg, #e53637, #c52a2b);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 18px;
+        transition: all 0.3s ease;
+    }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(229, 54, 55, 0.3);
+        }
+
+    .security-note {
+        text-align: center;
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 10px;
+    }
+
+    .form-control:focus {
+        border-color: #e53637;
+        box-shadow: 0 0 0 0.2rem rgba(229, 54, 55, 0.25);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Form validation
+        $('#checkoutForm').on('submit', function(e) {
+            var address = $('textarea[name="shippingAddress"]').val().trim();
+            var paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+            if (!address) {
+                e.preventDefault();
+                alert('Please enter your shipping address.');
+                return false;
+            }
+
+            if (!paymentMethod) {
+                e.preventDefault();
+                alert('Please select a payment method.');
+                return false;
+            }
+        });
+    });
+</script>

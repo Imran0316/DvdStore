@@ -23,5 +23,8 @@ namespace DvdStore.Models
 
         [StringLength(500)]
         public string? ShippingAddress { get; set; }
+
+        // Add this navigation property to fix the error
+        public ICollection<OrderDetails> tbl_OrderDetails { get; set; }
     }
 }

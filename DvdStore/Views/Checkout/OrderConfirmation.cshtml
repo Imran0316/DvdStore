@@ -1,0 +1,307 @@
+﻿@model DvdStore.Models.Orders
+@{
+    ViewData["Title"] = "Order Confirmation";
+    Layout = "_Layout1";
+}
+
+<section class="confirmation spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="confirmation__title text-center">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>Order Confirmed!</h2>
+                    <p class="lead">Thank you for your purchase. Your order has been successfully received.</p>
+                    <div class="order-number">
+                        Order #@Model.OrderID
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <!-- Order Details -->
+            <div class="col-lg-6">
+                <div class="confirmation__card">
+                    <h4><i class="fas fa-receipt me-2"></i>Order Details</h4>
+                    <div class="confirmation__item">
+                        <span>Order Number:</span>
+                        <strong>#@Model.OrderID</strong>
+                    </div>
+                    <div class="confirmation__item">
+                        <span>Order Date:</span>
+                        <strong>@Model.OrderDate.ToString("MMMM dd, yyyy hh:mm tt")</strong>
+                    </div>
+                    <div class="confirmation__item">
+                        <span>Total Amount:</span>
+                        <strong class="text-success">$@Model.TotalAmount.ToString("N2")</strong>
+                    </div>
+                    <div class="confirmation__item">
+                        <span>Status:</span>
+                        <span class="badge bg-success">@Model.Status</span>
+                    </div>
+                    <div class="confirmation__item">
+                        <span>Payment Method:</span>
+                        <strong>
+                            @(ViewContext.HttpContext.Request.Method == "POST" ?
+                                                        Context.Request.Form["paymentMethod"] : "Credit Card")
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="col-lg-6">
+                <div class="confirmation__card">
+                    <h4><i class="fas fa-truck me-2"></i>Shipping Information</h4>
+                    <div class="confirmation__item">
+                        <span>Shipping Address:</span>
+                        <strong>@Model.ShippingAddress</strong>
+                    </div>
+                    <div class="confirmation__item">
+                        <span>Estimated Delivery:</span>
+                        <strong>@DateTime.Now.AddDays(3).ToString("MMMM dd, yyyy")</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="confirmation__card">
+                    <h4><i class="fas fa-box-open me-2"></i>Order Items</h4>
+                    <div class="table-responsive">
+                        <table class="table confirmation__table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.tbl_OrderDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="product-info">
+                                                <img src="@item.tbl_Products.ProductImageUrl"
+                                                     alt="@item.tbl_Products.tbl_Albums?.Title"
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                                                <div class="product-details">
+                                                    <h6>@item.tbl_Products.tbl_Albums?.Title</h6>
+                                                    <p class="artist">By: @item.tbl_Products.tbl_Producers?.ProducerName</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$@item.UnitPrice.ToString("N2")</td>
+                                        <td>@item.Quantity</td>
+                                        <td class="text-success">$@((item.UnitPrice * item.Quantity).ToString("N2"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                    <td><strong class="text-success">$@Model.TotalAmount.ToString("N2")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-lg-12">
+                <div class="confirmation__actions text-center">
+                    <p class="email-note">
+                        <i class="fas fa-envelope me-2"></i>A confirmation email has been sent to your email address.
+                    </p>
+
+                    <div class="action-buttons">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </a>
+                        <a asp-controller="Order" asp-action="OrderHistory" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-history me-2"></i>View Order History
+                        </a>
+                    </div>
+
+                    <div class="support-info mt-4">
+                        <p>Need help? <a href="#" class="support-link">Contact Support</a> or call 1-800-ENT-HUB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .confirmation__title {
+        padding: 40px 0;
+        background: linear-gradient(135deg, #0b0c2a 0%, #1a1b3a 100%);
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+
+    .confirmation__title h2 {
+        font-family: 'Oswald', sans-serif;
+        margin-bottom: 10px;
+    }
+
+    .order-number {
+        background: rgba(255,255,255,0.1);
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 18px;
+        margin-top: 15px;
+        display: inline-block;
+    }
+
+    .confirmation__card {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+
+        .confirmation__card h4 {
+            font-family: 'Oswald', sans-serif;
+            color: #0b0c2a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e53637;
+        }
+
+    .confirmation__item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+        .confirmation__item:last-child {
+            border-bottom: none;
+        }
+
+    .confirmation__table {
+        margin-top: 20px;
+    }
+
+        .confirmation__table th {
+            background: #0b0c2a;
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+        }
+
+        .confirmation__table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .product-details h6 {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #0b0c2a;
+    }
+
+    .artist {
+        font-size: 12px;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .total-row {
+        background: #f8f9fa;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .confirmation__actions {
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+
+    .email-note {
+        color: #6c757d;
+        font-size: 16px;
+    }
+
+    .action-buttons {
+        margin: 25px 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #e53637, #c52a2b);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid #e53637;
+        color: #e53637;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+        .btn-outline-primary:hover {
+            background: #e53637;
+            color: white;
+        }
+
+    .support-info {
+        color: #6c757d;
+    }
+
+    .support-link {
+        color: #e53637;
+        text-decoration: none;
+    }
+
+        .support-link:hover {
+            text-decoration: underline;
+        }
+
+    .badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Print order confirmation
+        $('.print-order').click(function() {
+            window.print();
+        });
+
+        // Celebrate order confirmation
+        setTimeout(function() {
+            $('.success-icon').addClass('animate__animated animate__bounceIn');
+        }, 500);
+    });
+</script>
