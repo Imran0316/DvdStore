@@ -10,10 +10,12 @@
 <form asp-action="Suppliers" method="post" class="mb-3">
     <div class="row">
         <div class="col-md-4">
-            <input type="text" name="SupplierName" placeholder="Supplier Name" class="form-control" required />
+            <input type="text"  name="SupplierName" placeholder="Supplier Name" class="form-control" required />
+            <span asp-validation-for="SupplierName"></span>
         </div>
         <div class="col-md-6">
             <input type="text" name="ContactInfo" placeholder="Phone" class="form-control" />
+
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-success">Add</button>
@@ -61,3 +63,11 @@
     </tbody>
 
 </table>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
