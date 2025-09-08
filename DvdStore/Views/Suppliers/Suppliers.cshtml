@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DvdStore.Models.Suppliers>
+﻿@model DvdStore.Models.Suppliers
 @{
     Layout = "Dashboard"; // tumhara admin layout
     ViewBag.Title = "suppliers";
@@ -10,12 +10,11 @@
 <form asp-action="Suppliers" method="post" class="mb-3">
     <div class="row">
         <div class="col-md-4">
-            <input type="text"  name="SupplierName" placeholder="Supplier Name" class="form-control" required />
+            <input type="text" asp-for="SupplierName" placeholder="Supplier Name" class="form-control" required />
             <span asp-validation-for="SupplierName"></span>
         </div>
         <div class="col-md-6">
-            <input type="text" name="ContactInfo" placeholder="Phone" class="form-control" />
-
+            <input type="text" asp-for="ContactInfo" placeholder="Phone" class="form-control" />
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-success">Add</button>
@@ -35,33 +34,34 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model != null && Model.Any())
-        {
-            int count = 1;
-            foreach (var sp in Model)
+        @{
+            var suppliers = ViewBag.Suppliers as IEnumerable<DvdStore.Models.Suppliers>;
+            if (suppliers != null && suppliers.Any())
+            {
+                int count = 1;
+                foreach (var sp in suppliers)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>@sp.SupplierID</td>
+                        <td>@sp.SupplierName</td>
+                        <td>@sp.ContactInfo</td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" asp-action="EditSuppliers" asp-route-id="@sp.SupplierID">Edit</a>
+                            <a class="btn btn-sm btn-danger" asp-action="DeleteSupplier" asp-route-id="@sp.SupplierID" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                        </td>
+                    </tr>
+                    count++;
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@count</td>
-                    <td>@sp.SupplierID</td>
-                    <td>@sp.SupplierName</td>
-                    <td>@sp.ContactInfo</td>
-                    <td>
-                        <a class="btn btn-sm btn-primary" asp-action="EditSuppliers" asp-route-id="@sp.SupplierID">Edit</a>
-                        <a class="btn btn-sm btn-danger" asp-action="DeleteSupplier" asp-route-id="@sp.SupplierID" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
-                    </td>
+                    <td colspan="4" class="text-center text-muted">No categories found.</td>
                 </tr>
-                count++;
             }
         }
-        else
-        {
-            <tr>
-                <td colspan="4" class="text-center text-muted">No categories found.</td>
-            </tr>
-        }
-
     </tbody>
-
 </table>
 @section Scripts {
     @{
