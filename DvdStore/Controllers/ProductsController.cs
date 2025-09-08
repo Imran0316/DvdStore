@@ -58,12 +58,15 @@ namespace DvdStore.Controllers
                 return RedirectToAction("Products");
             }
 
-            // Agar error ho to dobara data bhejo
+            // ❌ yahan galat view bhej rahe ho
+            // return View(db.tbl_Products.ToList());
+
+            // ✅ isko product add form wapas bhejna chahiye
             ViewBag.Albums = db.tbl_Albums.ToList();
             ViewBag.Suppliers = db.tbl_Suppliers.ToList();
             ViewBag.Producers = db.tbl_Producers.ToList();
 
-            return View(db.tbl_Products.ToList());
+            return View(product); // 👈 user ko form + validation errors dikhaye
         }
 
         [HttpGet]

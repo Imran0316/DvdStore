@@ -5,6 +5,7 @@
 }
 
 <h2>Manage Products</h2>
+<div asp-validation-summary="All" class="text-danger"></div>
 
 <!-- Add New Product Form -->
 <form asp-action="Products" method="post" enctype="multipart/form-data" class="mb-3">
@@ -63,7 +64,7 @@
         </div>
         <div class="col-md-3 mt-2">
             <label>Product Trailer</label>
-            <input type="file" name="TrailerUrl" class="form-control" />
+            <input  name="TrailerUrl" class="form-control" />
         </div>
 
         <div class="col-md-3 mt-2">
@@ -124,13 +125,42 @@
                     <td>
                         @if (!string.IsNullOrEmpty(p.TrailerUrl))
                         {
-                            <video src="@p.TrailerUrl" style="height:50px;" />
+                            string embedUrl = p.TrailerUrl;
+
+                            // Agar short URL hai (youtu.be)
+                            if (embedUrl.Contains("youtu.be/"))
+                            {
+                                var videoId = embedUrl.Split("youtu.be/")[1];
+
+                                // Agar query string (?si=...) lagi ho to remove kar do
+                                if (videoId.Contains("?"))
+                                {
+                                    videoId = videoId.Split("?")[0];
+                                }
+
+                                embedUrl = "https://www.youtube.com/embed/" + videoId;
+                            }
+                            // Agar normal watch?v= wala link ho
+                            else if (embedUrl.Contains("watch?v="))
+                            {
+                                embedUrl = embedUrl.Replace("watch?v=", "embed/");
+                            }
+
+                            <iframe width="160" height="90"
+                                    src="@embedUrl"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
                         }
                         else
                         {
                             <span class="text-muted">No Trailer</span>
                         }
                     </td>
+
+
+
                     <td>@(p.IsActive ? "Active" : "Inactive")</td>
                     <td>
                         <a class="btn btn-sm btn-primary" asp-action="EditProduct" asp-route-id="@p.ProductID">Edit</a>
