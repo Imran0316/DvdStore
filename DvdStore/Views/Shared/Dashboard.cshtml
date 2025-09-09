@@ -1,122 +1,346 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-    Layout = null; // because ye ek master layout hai
+﻿@{
+    Layout = null;
+    var ctrl = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+    var act = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
 }
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>@ViewBag.Title - Admin Dashboard</title>
+    <title>@ViewBag.Title - DVD Store Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="~/css/DashboardStyles.css" rel="stylesheet" />
+    <!-- Bootstrap -->
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 80px;
+            --brand-color: #1f2937; /* dark */
+            --accent: #d97706; /* golden-ish */
+        }
+
+        body {
+            font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* Layout */
+        .sb-topnav {
+            background: linear-gradient(180deg,#0b1220,#111827);
+            box-shadow: 0 2px 8px rgba(2,6,23,0.15);
+        }
+
+        .sb-sidenav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: #0f1724;
+            color: #cbd5e1;
+            padding-top: 60px;
+            transition: width .22s ease;
+            overflow: hidden;
+        }
+
+            .sb-sidenav .brand {
+                position: absolute;
+                top: 12px;
+                left: 18px;
+                display: flex;
+                align-items: center;
+                gap: .6rem;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .sb-sidenav .nav-link {
+                color: #cbd5e1;
+                padding: .65rem 1rem;
+                display: flex;
+                align-items: center;
+                gap: .8rem;
+                transition: background .15s, color .15s, transform .08s;
+                border-radius: 8px;
+                margin: 6px 8px;
+            }
+
+                .sb-sidenav .nav-link i {
+                    min-width: 20px;
+                    text-align: center;
+                    font-size: 16px;
+                }
+
+                .sb-sidenav .nav-link:hover {
+                    background: rgba(255,255,255,0.03);
+                    color: #fff;
+                    transform: translateX(4px);
+                }
+
+                .sb-sidenav .nav-link.active {
+                    background: linear-gradient(90deg, rgba(217,119,6,0.12), rgba(255,255,255,0.02));
+                    color: #fff;
+                    box-shadow: inset 3px 0 0 var(--accent);
+                }
+
+        /* Collapsed state */
+        body.sb-sidenav-collapsed .sb-sidenav {
+            width: var(--sidebar-collapsed);
+        }
+
+        body.sb-sidenav-collapsed #layoutSidenav_content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        #layoutSidenav_content {
+            margin-left: var(--sidebar-width);
+            transition: margin .22s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* shorten label text when collapsed */
+        body.sb-sidenav-collapsed .nav .nav-text {
+            display: none;
+        }
+
+        body.sb-sidenav-collapsed .nav .nav-icon-only {
+            display: inline-block;
+            margin-left: 6px;
+        }
+
+        /* Main content */
+        main {
+            padding: 28px;
+            flex: 1;
+        }
+
+        .top-cards .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(14,30,37,0.05);
+        }
+
+        .card .stat {
+            font-weight: 700;
+            font-size: 1.6rem;
+        }
+
+        .card small {
+            color: #6b7280;
+        }
+
+        /* Footer */
+        footer {
+            background: #fff;
+            border-top: 1px solid #e6eef7;
+            padding: 14px 0;
+            color: #6b7280;
+        }
+
+        /* Responsive tweaks */
+        @@media (max-width: 992px) {
+    .sb-sidenav {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: var(--sidebar-width, 240px);
+        height: 100%;
+        background: #0f1724;
+        z-index: 1050;
+        transition: left 0.3s ease;
+    }
+
+    body.sb-sidenav-show .sb-sidenav {
+        left: 0;
+    }
+
+    #layoutSidenav_content {
+        margin-left: 0 !important;
+    }
+}
+        /* jab collapse ho tab text hide ho but icon dikhna chahiye */
+        body.sb-sidenav-collapsed .nav-text {
+            display: none;
+        }
+
+        body.sb-sidenav-collapsed .nav-link i {
+            margin-right: 0; /* icons properly align ho jaye */
+        }
+
+        /* Default (desktop) */
+        .sb-sidenav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: #0f1724;
+            color: #cbd5e1;
+            padding-top: 60px;
+            transition: all 0.3s ease;
+            z-index: 1030;
+        }
+
+        #layoutSidenav_content {
+            margin-left: var(--sidebar-width);
+            transition: margin 0.3s ease;
+        }
+
+        /* Desktop collapsed */
+        body.sb-sidenav-collapsed .sb-sidenav {
+            width: var(--sidebar-collapsed);
+        }
+
+        body.sb-sidenav-collapsed #layoutSidenav_content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Mobile: sidebar hidden by default */
+        @@media (max-width: 992px) {
+            .sb-sidenav
+
+        {
+            left: -100%;
+            width: var(--sidebar-width);
+        }
+
+        body.sb-sidenav-show .sb-sidenav {
+            left: 0;
+        }
+
+        #layoutSidenav_content {
+            margin-left: 0 !important;
+        }
+
+        }
+    </style>
 </head>
 <body>
     <!-- Top Navbar -->
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand ps-3" asp-controller="Home" asp-action="Index">Shopping Cart</a>
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark">
+        <div class="container-fluid px-3">
+            <button class="btn btn-link text-white me-2" id="sidebarToggle"><i class="fa fa-bars"></i></button>
 
-        <!-- Right side profile dropdown -->
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-user fa-fw"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a></li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout">Logout</a></li>
-                </ul>
-            </li>
-        </ul>
+            <a class="navbar-brand text-white d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <i class="fa fa-compact-disc me-2" style="font-size:18px;"></i>
+            </a>
+
+            <form class="d-none d-md-flex ms-4 w-50">
+                <div class="input-group">
+                    <input class="form-control form-control-sm" type="search" placeholder="Search products, orders, users..." aria-label="Search">
+                    <button class="btn btn-sm btn-outline-light" type="button"><i class="fa fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item dropdown me-2">
+                    <a class="nav-link position-relative text-white" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notifDropdown" style="width:320px;">
+                        <li class="p-3 border-bottom"><strong>Notifications</strong></li>
+                        <li><a class="dropdown-item small" href="#">New order #1024 placed <br /><small class="text-muted">10 minutes ago</small></a></li>
+                        <li><a class="dropdown-item small" href="#">New user registered <br /><small class="text-muted">1 hour ago</small></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="text-center"><a class="dropdown-item small text-primary" href="#">View all</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" id="userDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="~/images/avatar-placeholder.png" alt="avatar" style="width:32px;height:32px;border-radius:8px;margin-right:8px;">
+                        <span class="d-none d-sm-inline">Admin</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fa fa-user me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Settings"><i class="fa fa-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="fa fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </nav>
 
-    <!-- Side Navigation -->
+    <!-- Sidebar + Content -->
     <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
-                <div class="sb-sidenav-menu">
-                    <div class="nav">
-                        <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                        Home
-                        <a class="nav-link" asp-controller="Admin" asp-action="Index">
+        <aside class="sb-sidenav">
+            <div class="brand"><i class="fa fa-compact-disc" style="font-size:18px;"></i><span class="ms-1">DVD Store</span></div>
+
+            <nav class="nav flex-column mt-3">
+                <a class="nav-link @(ctrl == "admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">
+                    <i class="fa fa-home"></i><span class="nav-text"> Dashboard</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "account" ? "active" : "")" asp-controller="Account" asp-action="Profile">
+                    <i class="fa fa-user"></i><span class="nav-text"> Profile</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "category" ? "active" : "")" asp-controller="Category" asp-action="Categories">
+                    <i class="fa fa-list"></i><span class="nav-text"> Categories</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "suppliers" ? "active" : "")" asp-controller="Suppliers" asp-action="Suppliers">
+                    <i class="fa fa-truck"></i><span class="nav-text"> Suppliers</span>
+                </a>
+
+                <!-- Collapsible Catalog group -->
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#catalogCollapse" role="button" aria-expanded="false" aria-controls="catalogCollapse">
+                    <span><i class="fa fa-box-open"></i><span class="nav-text"> Catalog</span></span>
+                    <i class="fa fa-chevron-down small"></i>
+                </a>
+                <div class="collapse @( (ctrl=="products" || ctrl=="albums" || ctrl=="songs") ? "show" : "")" id="catalogCollapse">
+                    <nav class="nav flex-column ms-3">
+                        <a class="nav-link small @(ctrl == "products" ? "active" : "")" asp-controller="Products" asp-action="Products">
+                            <i class="fa fa-shopping-basket"></i><span class="nav-text"> Products</span>
                         </a>
-                        <a class="nav-link" asp-controller="Account" asp-action="Profile">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
-                            Profile
+                        <a class="nav-link small @(ctrl == "albums" ? "active" : "")" asp-controller="Albums" asp-action="Albums">
+                            <i class="fa fa-compact-disc"></i><span class="nav-text"> Albums</span>
                         </a>
-                        <a class="nav-link" asp-controller="Category" asp-action="Categories">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Categories
+                        <a class="nav-link small @(ctrl == "songs" ? "active" : "")" asp-controller="Songs" asp-action="Songs">
+                            <i class="fa fa-music"></i><span class="nav-text"> Songs</span>
                         </a>
-                        <a class="nav-link" asp-controller="Suppliers" asp-action="Suppliers">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Suppliers
-                        </a>
-                        <a class="nav-link" asp-controller="Producer" asp-action="Producer">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Producers
-                        </a>
-                        <a class="nav-link" asp-controller="Artist" asp-action="Artists">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Artists
-                        </a>
-                        <a class="nav-link" asp-controller="Albums" asp-action="Albums">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Albums
-                        </a>
-                        <a class="nav-link" asp-controller="Songs" asp-action="Songs">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Add Songs
-                        </a>
-                        <a class="nav-link" asp-controller="Admin" asp-action="users">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                            Users
-                        </a>
-                        <a class="nav-link" asp-controller="Products" asp-action="Products">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-basket"></i></div>
-                            Products
-                        </a>
-                        <a class="nav-link" asp-controller="Orders" asp-action="Index">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
-                            Orders
-                        </a>
-                        <a class="nav-link" asp-controller="Cart" asp-action="Index">
-                            <div class="sb-nav-link-icon"><i class="fas fa-money-check"></i></div>
-                            Cart
-                        </a>
+                    </nav>
+                </div>
+
+                <a class="nav-link @(ctrl == "artists" ? "active" : "")" asp-controller="Artist" asp-action="Artists">
+                    <i class="fa fa-microphone"></i><span class="nav-text"> Artists</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "orders" ? "active" : "")" asp-controller="Orders" asp-action="Index">
+                    <i class="fa fa-shopping-cart"></i><span class="nav-text"> Orders</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
+                    <i class="fa fa-chart-line"></i><span class="nav-text"> Reports</span>
+                </a>
+
+                <div class="mt-3 px-3">
+                    <small class="text-muted">Quick Actions</small>
+                    <div class="d-grid gap-2 mt-2">
+                        <a class="btn btn-sm btn-outline-light" asp-controller="Albums" asp-action="Create"><i class="fa fa-plus me-2"></i> New Album</a>
+                        <a class="btn btn-sm btn-outline-light" asp-controller="Products" asp-action="Create"><i class="fa fa-plus me-2"></i> New Product</a>
                     </div>
                 </div>
             </nav>
-        </div>
+        </aside>
 
-        <!-- Main Content -->
         <div id="layoutSidenav_content">
             <main>
-                <div class="container-fluid px-5 py-5">
-                    
-                        @RenderBody()
-                    
+                <div class="container-fluid px-4">
+                    @RenderBody()
                 </div>
-
             </main>
 
-            <!-- Footer -->
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">&copy; @DateTime.Now.Year - Design & Developed By Qasim & Imran</div>
-                    </div>
+            <footer class="text-center">
+                <div class="container">
+                    <div class="small">&copy; @DateTime.Now.Year — Designed & Developed by <strong>Imran</strong></div>
                 </div>
             </footer>
         </div>
@@ -125,8 +349,45 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/scripts.js"></script>
+    <script>
+        (function(){
+            const body = document.body;
+            const toggle = document.getElementById('sidebarToggle');
+
+            // -------- Desktop restore state --------
+            if (window.innerWidth >= 992) {
+                if (localStorage.getItem('sb|sidebar-collapsed') === 'true') {
+                    body.classList.add('sb-sidenav-collapsed');
+                }
+            }
+
+            // -------- Toggle click --------
+            toggle.addEventListener('click', function(e){
+                e.preventDefault();
+
+                if (window.innerWidth < 992) {
+                    // Mobile: slide in/out sidebar
+                    body.classList.toggle('sb-sidenav-show');
+                } else {
+                    // Desktop: collapse/expand sidebar
+                    body.classList.toggle('sb-sidenav-collapsed');
+                    localStorage.setItem('sb|sidebar-collapsed',
+                        body.classList.contains('sb-sidenav-collapsed'));
+                }
+            });
+
+            // -------- Window resize fix --------
+            window.addEventListener('resize', function(){
+                if (window.innerWidth < 992) {
+                    body.classList.remove('sb-sidenav-collapsed'); // force expand
+                } else {
+                    body.classList.remove('sb-sidenav-show'); // remove mobile overlay
+                }
+            });
+        })();
+    </script>
+
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
-
-@RenderSection("Scripts", required: false)

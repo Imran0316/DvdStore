@@ -4,6 +4,105 @@
 @{
     Layout = "Dashboard";
 }
-<h2>
-    admin index page
-</h2>
+<div class="container-fluid py-4">
+
+    <!-- Top Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card text-bg-primary p-3">
+                <h6>Total Users</h6>
+                <h3>1,245</h3>
+                <i class="bi bi-people fs-2"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-success p-3">
+                <h6>Total Orders</h6>
+                <h3>523</h3>
+                <i class="bi bi-cart-check fs-2"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-warning p-3">
+                <h6>Products</h6>
+                <h3>320</h3>
+                <i class="bi bi-box-seam fs-2"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-danger p-3">
+                <h6>Feedbacks</h6>
+                <h3>89</h3>
+                <i class="bi bi-chat-dots fs-2"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table + Sales Chart -->
+    <div class="row g-4">
+        <!-- Recent Orders -->
+        <div class="col-md-7">
+            <div class="card p-3">
+                <h5 class="mb-3">Recent Orders</h5>
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Product</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Ali</td>
+                            <td>Album A</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ayesha</td>
+                            <td>Album B</td>
+                            <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Usman</td>
+                            <td>Album C</td>
+                            <td><span class="badge bg-danger">Cancelled</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sales Chart -->
+        <div class="col-md-5">
+            <div class="card p-3">
+                <h5 class="mb-3">Sales Overview</h5>
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Sales',
+          data: [120, 190, 300, 250, 320, 400],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.4
+        }]
+      }
+    });
+</script>

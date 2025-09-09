@@ -1,26 +1,26 @@
-/*!
-    * Start Bootstrap - SB Admin v7.0.7 (https://startbootstrap.com/template/sb-admin)
-    * Copyright 2013-2023 Start Bootstrap
-    * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-sb-admin/blob/master/LICENSE)
-    */
-    // 
-// Scripts
-// 
+//(function () {
+//    const body = document.body;
+//    const toggle = document.getElementById('sidebarToggle');
 
-window.addEventListener('DOMContentLoaded', event => {
+//    if (toggle) {
+//        toggle.addEventListener('click', function (e) {
+//            e.preventDefault();
 
-    // Toggle the side navigation
-    const sidebarToggle = document.body.querySelector('#sidebarToggle');
-    if (sidebarToggle) {
-        // Uncomment Below to persist sidebar toggle between refreshes
-        // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-        //     document.body.classList.toggle('sb-sidenav-toggled');
-        // }
-        sidebarToggle.addEventListener('click', event => {
-            event.preventDefault();
-            document.body.classList.toggle('sb-sidenav-toggled');
-            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-        });
-    }
+//            if (window.innerWidth < 992) {
+//                // Mobile: slide overlay
+//                body.classList.toggle('sb-sidenav-show');
+//            } else {
+//                // Desktop: collapse width
+//                body.classList.toggle('sb-sidenav-collapsed');
+//                localStorage.setItem('sb|sidebar-collapsed',
+//                    body.classList.contains('sb-sidenav-collapsed'));
+//            }
+//        });
+//    }
 
-});
+//    // Desktop restore state
+//    if (window.innerWidth >= 992 &&
+//        localStorage.getItem('sb|sidebar-collapsed') === 'true') {
+//        body.classList.add('sb-sidenav-collapsed');
+//    }
+//})();
