@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
@@ -31,28 +30,145 @@
 </head>
 <style>
     body {
-        /* background-color:#0B0C2A ; */
-        color: white;
+        background: linear-gradient(135deg, #0b0c2a, #1a1b3a);
+        font-family: 'Mulish', sans-serif;
+        background-image: url('~/img/hero/hero-1.jpg');
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .register-card {
+        position: relative;
+        background: rgba(20, 20, 40, 0.9);
+        padding: 40px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 420px;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        .register-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(#ff3c3c, #ffffff, #ff3c3c, #1a1b3a);
+            animation: rotate 6s linear infinite;
+            z-index: -1;
+        }
+
+        .register-card::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+    @@keyframes rotate {
+        100%
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    h2 {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 25px;
+        color: red !important;
+        position: relative;
+        z-index: 2;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #ff3c3c;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-control {
+        background: #12122b;
+        border: 1px solid #2a2b50;
+        color: #fff;
+        border-radius: 8px;
+        z-index: 2;
+        position: relative;
+    }
+
+        .form-control:focus {
+            border-color: #ff3c3c;
+            box-shadow: 0 0 8px rgba(255, 60, 60, 0.6);
+        }
+
+    .btn-register {
+        background: #ff3c3c;
+        color: #fff;
+        font-weight: bold;
+        width: 100%;
+        border-radius: 8px;
+        transition: 0.3s;
+        position: relative;
+        z-index: 2;
+        padding: 10px;
+        border: none;
+        margin-top: 15px;
+    }
+
+        .btn-register:hover {
+            background: #ff5c5c;
+            transform: scale(1.05);
+        }
+
+    .reg {
+        position: relative;
+        z-index: 2;
+    }
+
+    .error {
+        font-size: 0.85rem;
+        position: relative;
+        z-index: 2;
     }
 </style>
-<h2 class="text-white text-center">Login</h2>
-<div class="text-danger small">@ViewBag.message</div>
-<form asp-action="Login" method="post">
+<body>
+    <!-- 🔥 Proper Centered Card -->
+    <div class="register-card">
+        <h2>Login</h2>
+        <div class="text-danger small text-center mb-3">@ViewBag.message</div>
 
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" name="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" name="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-info">Sign In</button>
-</form>
+        <form asp-action="Login" method="post" class="reg">
+            <div class="mb-3">
+                <label>Email</label>
+                <input asp-for="Email" name="Email" class="form-control" />
+                <span asp-validation-for="Email" class="error text-danger"></span>
+            </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+            <div class="mb-3">
+                <label>Password</label>
+                <input asp-for="Password" name="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="error text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-register">Sign In</button>
+        </form>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>
 
