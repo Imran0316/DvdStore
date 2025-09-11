@@ -5,6 +5,11 @@ namespace DvdStore.Models
 {
     public class Products
     {
+        public Products()
+        {
+            tbl_ProductReviews = new List<ProductReviews>();
+        }
+
         [Key]
         public int ProductID { get; set; }
 
@@ -45,8 +50,8 @@ namespace DvdStore.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // ADD THIS NAVIGATION PROPERTY
-        public ICollection<ProductReviews> tbl_ProductReviews { get; set; }
+        // FIXED: Initialize the collection
+        public virtual ICollection<ProductReviews> tbl_ProductReviews { get; set; }
 
         // NotMapped properties for calculated values
         [NotMapped]

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DvdStore.Models
+﻿namespace DvdStore.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public class Users
     {
         [Key]
@@ -19,12 +20,14 @@ namespace DvdStore.Models
         [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits")]
         public string Phone { get; set; }
 
-
         [Required]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Role { get; set; } = "Customer"; // Customer, Admin, Moderator
+
         public DateTime Created_At { get; set; } = DateTime.Now;
-
-
     }
 }

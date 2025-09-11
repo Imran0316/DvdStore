@@ -1,0 +1,139 @@
+﻿@* @* @model DvdStore.Models.Feedback
+@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "_Layout1";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Send us your feedback</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Show success/error messages -->
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["Success"]
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" id="feedbackForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label">Subject *</label>
+                            <input asp-for="Subject" class="form-control" required />
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Message" class="form-label">Message *</label>
+                            <textarea asp-for="Message" class="form-control" rows="5" required></textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span id="submitText">Submit Feedback</span>
+                            <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ONLY ONE Scripts SECTION BELOW - REMOVE ANY OTHERS -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        console.log('Feedback form debugging enabled');
+
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            console.log('Form submitted - checking validation');
+            console.log('Subject value:', document.getElementById('Subject').value);
+            console.log('Message value:', document.getElementById('Message').value);
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            submitBtn.disabled = true;
+            submitText.textContent = 'Submitting...';
+            loadingSpinner.classList.remove('d-none');
+        });
+
+        // Check if validation is working
+        $(document).ready(function() {
+            console.log('jQuery validation available:', typeof $.fn.validate !== 'undefined');
+            console.log('Unobtrusive validation available:', typeof $.validator.unobtrusive !== 'undefined');
+
+            // Re-enable button if validation fails
+            $('#feedbackForm').on('invalid-form.validate', function() {
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = false;
+                document.getElementById('submitText').textContent = 'Submit Feedback';
+                document.getElementById('loadingSpinner').classList.add('d-none');
+            });
+        });
+    </script>
+} *@ 
+
+
+
+@model DvdStore.Models.Feedback
+@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "_Layout1";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Send us your feedback</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="feedbackForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label">Subject *</label>
+                            <input asp-for="Subject" class="form-control" required />
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Message" class="form-label">Message *</label>
+                            <textarea asp-for="Message" class="form-control" rows="5" required></textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple script without section -->
+<script>
+    console.log('Feedback form loaded');
+    document.getElementById('feedbackForm').addEventListener('submit', function() {
+        console.log('Form submitted');
+    });
+</script>

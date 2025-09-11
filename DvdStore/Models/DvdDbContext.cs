@@ -26,6 +26,8 @@ namespace DvdStore.Models
         public DbSet<HeroImage> tbl_HeroImages { get; set; }
         public DbSet<ProductReviews> tbl_ProductReviews { get; set; }
         public DbSet<NewsPromotion> tbl_NewsPromotions { get; set; }
+        public DbSet<Wishlist> tbl_Wishlists { get; set; }
+        public DbSet<Feedback> tbl_Feedbacks { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure the relationship between Product and ProductReview
@@ -33,13 +35,21 @@ namespace DvdStore.Models
                 .HasOne(pr => pr.Product)
                 .WithMany(p => p.tbl_ProductReviews)
                 .HasForeignKey(pr => pr.ProductID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false); // ADD THIS LINE
 
             modelBuilder.Entity<ProductReviews>()
                 .HasOne(pr => pr.User)
                 .WithMany()
                 .HasForeignKey(pr => pr.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Add this to make the relationship optional
+            modelBuilder.Entity<Products>()
+                .HasMany(p => p.tbl_ProductReviews)
+                .WithOne(pr => pr.Product)
+                .HasForeignKey(pr => pr.ProductID)
+                .IsRequired(false);
         }
     }
 }

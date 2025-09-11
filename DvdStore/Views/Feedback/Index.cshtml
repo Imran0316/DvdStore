@@ -1,0 +1,48 @@
+﻿@model IEnumerable<DvdStore.Models.Feedback>
+@{
+    Layout = "Dashboard";
+    ViewData["Title"] = "Customer Feedback";
+}
+
+<h2>Customer Feedback</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var feedback in Model)
+        {
+            <tr>
+                <td>@feedback.User?.Name</td>
+                <td>@feedback.Subject</td>
+                <td>@feedback.Message</td>
+                <td>@feedback.SubmittedDate.ToString("MMM dd, yyyy")</td>
+                <td>
+                    <span class="badge bg-@(feedback.Status == "New" ? "warning" :
+                                                                    feedback.Status == "InProgress" ? "info" :
+                                                                    "success")">
+                    @feedback.Status
+                </span>
+            </td>
+            <td>
+                <form asp-action="UpdateStatus" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@feedback.FeedbackID" />
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="New" selected="@(feedback.Status == "New")">New</option>
+                        <option value="InProgress" selected="@(feedback.Status == "InProgress")">In Progress</option>
+                        <option value="Resolved" selected="@(feedback.Status == "Resolved")">Resolved</option>
+                    </select>
+                </form>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>

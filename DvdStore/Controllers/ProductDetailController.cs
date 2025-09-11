@@ -107,5 +107,26 @@ namespace DvdStore.Controllers
         {
             return HttpContext.Session.GetInt32("UserId") != null;
         }
+
+        // In ProductDetailController.cs - Add this method
+        [HttpPost]
+        public async Task<IActionResult> DeleteReview(int reviewId)
+        {
+            if (!AuthorizationHelper.IsAdmin(HttpContext))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var review = await _context.tbl_ProductReviews.FindAsync(reviewId);
+            if (review != null)
+            {
+                _context.tbl_ProductReviews.Remove(review);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Review deleted successfully";
+            }
+
+            return RedirectToAction("Index", new { id = review.ProductID });
+        }
     }
 }

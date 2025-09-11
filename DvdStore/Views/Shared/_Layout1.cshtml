@@ -514,6 +514,37 @@
         .login-prompt {
             text-align: center;
         }
+
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+            .rating-input input {
+                display: none;
+            }
+
+            .rating-input label {
+                cursor: pointer;
+                font-size: 2rem;
+                color: #ddd;
+                transition: color 0.2s;
+            }
+
+            .rating-input input:checked ~ label {
+                color: #ffc107;
+            }
+
+            .rating-input label:hover,
+            .rating-input label:hover ~ label {
+                color: #ffc107;
+            }
+
+        .star-label {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -562,6 +593,12 @@
                             </li>
                         </ul>
 
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Feedback" asp-action="Create">
+                                <i class="fas fa-envelope me-1"></i> Contact Us
+                            </a>
+                        </li>
+
                         <ul class="navbar-nav ms-auto">
                             @if (Context.Session.GetInt32("UserId") != null)
                             {
@@ -577,6 +614,7 @@
                                         <span class="cart-count">@(Context.Session.GetInt32("CartCount") ?? 0)</span>
                                     </a>
                                 </li>
+                         
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Auth" asp-action="Logout">
                                         <i class="fas fa-sign-out-alt me-1"></i> Logout
@@ -692,7 +730,7 @@
     @RenderSection("Scripts", required: false)
 
     <script>
-        <script>
+    
             // Set active navigation link based on current page
             $(document).ready(function() {
                 var currentUrl = window.location.pathname.toLowerCase();
@@ -761,7 +799,7 @@
                             // Reset button
                             $button.html(originalText);
                             $button.prop('disabled', false);
-                        }
+                        }   
                     });
 
                     return false;

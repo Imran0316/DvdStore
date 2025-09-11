@@ -52,6 +52,7 @@ namespace DvdStore.Controllers
         {
             return View();
         }
+        // In AuthController.cs - Update the Login method
         [HttpPost]
         public IActionResult Login(string Email, string Password)
         {
@@ -59,7 +60,6 @@ namespace DvdStore.Controllers
 
             if (user != null)
             {
-                // Use PasswordHasher to verify the password
                 var result = PasswordHasher.VerifyHashedPassword(user, user.Password, Password);
 
                 if (result == PasswordVerificationResult.Success)
@@ -67,6 +67,7 @@ namespace DvdStore.Controllers
                     HttpContext.Session.SetString("UserName", user.Name);
                     HttpContext.Session.SetString("UserEmail", user.Email);
                     HttpContext.Session.SetInt32("UserId", user.UserID);
+                    HttpContext.Session.SetString("UserRole", user.Role); // Store role in session
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -74,6 +75,47 @@ namespace DvdStore.Controllers
 
             ViewBag.Error = "Invalid Email or Password";
             return View();
+        }
+
+        //// Add this temporary method to AuthController
+        //public IActionResult CreateFirstAdmin()
+        //{
+        //    var passwordHasher = new PasswordHasher<Users>();
+        //    var hashedPassword = passwordHasher.HashPassword(null, "admin123");
+
+        //    var admin = new Users
+        //    {
+        //        Name = "System Admin",
+        //        Email = "admin@example.com",
+        //        Phone = "12345678901",
+        //        Password = hashedPassword,
+        //        Role = "Admin",
+        //        Created_At = DateTime.Now
+        //    };
+
+        //    db.tbl_Users.Add(admin);
+        //    db.SaveChanges();
+
+        //    return Content("First admin created! Email: admin@example.com, Password: admin123");
+        //}
+
+
+        public IActionResult Logout()
+        {
+            // Clear all session variables
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("UserName");
+            HttpContext.Session.Remove("UserEmail");
+            HttpContext.Session.Remove("UserRole");
+            HttpContext.Session.Remove("CartCount");
+
+            // Optional: Clear the entire session
+            HttpContext.Session.Clear();
+
+            // Optional: Regenerate session ID for security
+            // HttpContext.Session.RegenerateSessionId();
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

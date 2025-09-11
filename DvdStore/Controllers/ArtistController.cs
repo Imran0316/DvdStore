@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DvdStore.Controllers
 {
-    public class ArtistController : Controller
+    public class ArtistController : BaseAdminController
     {
         private readonly DvdDbContext db;
         public ArtistController(DvdDbContext context)

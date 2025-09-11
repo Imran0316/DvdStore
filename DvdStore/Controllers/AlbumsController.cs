@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DvdStore.Controllers
 {
-    public class AlbumsController : Controller
+    public class AlbumsController : BaseAdminController
     {
         private readonly DvdDbContext db;
 
