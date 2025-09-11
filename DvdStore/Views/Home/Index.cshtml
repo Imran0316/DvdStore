@@ -1,49 +1,693 @@
-﻿<!-- Add this section to your existing Index.cshtml -->
-<section class="featured-product spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <h4>Featured Products</h4>
-                </div>
-            </div>
+﻿@{
+    ViewData["Title"] = "Home - EntertainmentHub";
+    Layout = "_Layout1";
+}
+
+<!-- In Views/Home/Index.cshtml - Replace the hero slider section -->
+<section class="hero-slider">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            @for (int i = 0; i < ViewBag.HeroImages.Count; i++)
+            {
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="@i"
+                        class="@(i == 0 ? "active" : "")"></button>
+            }
         </div>
-        <div class="row">
+        <div class="carousel-inner">
             @{
-                var featuredProducts = ViewBag.FeaturedProducts as IEnumerable<DvdStore.Models.Products>;
-                if (featuredProducts != null)
+                int index = 0;
+                foreach (var image in ViewBag.HeroImages)
                 {
-                    foreach (var product in featuredProducts.Take(6))
-                    {
-                        <div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                                <div class="product__item__pic set-bg"
-                                     style="background-image: url('@Url.Content(product.ProductImageUrl)');">
-                                    <div class="ep">$@product.Price</div>
-                                    <div class="view"><i class="fa fa-shopping-cart"></i> Add to Cart</div>
-                                </div>
-                                <div class="product__item__text">
-                                    <h5><a href="#">@product.tbl_Albums?.Title</a></h5>
-                                    <div class="product__price">$@product.Price</div>
-                                    <!-- Replace this in your Index.cshtml -->
-                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline add-to-cart-form">
-                                        <input type="hidden" name="productId" value="@product.ProductID" />
-                                        <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="add-cart-btn" style="background: none; border: none; color: #e53637; cursor: pointer;">
-                                            + Add To Cart
-                                        </button>
-                                    </form>
+                    <div class="carousel-item @(index == 0 ? "active" : "")">
+                        <div class="hero-slide" style="background-image: url('@Url.Content(image.ImageUrl)');">
+                            <div class="container">
+                                <div class="hero-content">
+                                    <h1 class="animate__animated animate__fadeInDown">@image.Title</h1>
+                                    <p class="animate__animated animate__fadeInUp">@image.Subtitle</p>
+                                    <div class="hero-btns animate__animated animate__fadeInUp">
+                                        <a href="@image.ButtonLink" class="btn btn-primary btn-lg">@image.ButtonText</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    }
+                    </div>
+                    index++;
                 }
             }
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</section>
+
+
+
+<!-- Quick Stats -->
+<section class="quick-stats">
+    <div class="container">
         <div class="row">
-            <div class="col-lg-12 text-center">
-                <a asp-controller="Home" asp-action="Products" class="primary-btn">View All Products</a>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-gamepad"></i>
+                    <h3>@(ViewBag.GamesCount ?? "500+")</h3>
+                    <p>Games Available</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-film"></i>
+                    <h3>@(ViewBag.MoviesCount ?? "1000+")</h3>
+                    <p>Movies & DVDs</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-music"></i>
+                    <h3>@(ViewBag.MusicCount ?? "800+")</h3>
+                    <p>Music Albums</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <h3>@(ViewBag.CustomersCount ?? "10K+")</h3>
+                    <p>Happy Customers</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Featured Products -->
+<section id="featured-products" class="featured-products">
+    <div class="container">
+        <div class="section-header">
+            <h2>🔥 Featured Products</h2>
+            <p>Handpicked selection of our best items</p>
+        </div>
+        <div class="row">
+            @if (ViewBag.FeaturedProducts != null)
+            {
+                foreach (var product in ViewBag.FeaturedProducts)
+                {
+                    <!-- Replace the current product card with this -->
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="product__item">
+                            <a href="@Url.Action("Index", "ProductDetail", new { id = product.ProductID })"
+                               style="text-decoration: none; color: inherit;">
+                                <div class="product__item__pic set-bg"
+                                     style="background-image: url('@Url.Content(product.ProductImageUrl)');">
+                                    <div class="ep">$@product.Price</div>
+                                </div>
+                                <div class="product__item__text">
+                                    <h5>@product.tbl_Albums?.Title</h5>
+                                    <ul>
+                                        <li>By: @product.tbl_Producers?.ProducerName</li>
+                                        <li>Stock: @product.StockQuantity</li>
+                                    </ul>
+                                    <div class="product__price">$@product.Price</div>
+                                </div>
+                            </a>
+
+                            <!-- Keep Add to Cart button outside the link -->
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                <input type="hidden" name="productId" value="@product.ProductID" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="add-cart-btn">+ Add To Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Top Selling Products -->
+<section class="top-selling bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2>🏆 Top Selling</h2>
+            <p>Our most popular products</p>
+        </div>
+        <div class="products-slider">
+            @if (ViewBag.TopSelling != null)
+            {
+                foreach (var product in ViewBag.TopSelling)
+                {
+                    <!-- Replace the current product card with this -->
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="product__item">
+                            <a href="@Url.Action("Index", "ProductDetail", new { id = product.ProductID })"
+                               style="text-decoration: none; color: inherit;">
+                                <div class="product__item__pic set-bg"
+                                     style="background-image: url('@Url.Content(product.ProductImageUrl)');">
+                                    <div class="ep">$@product.Price</div>
+                                </div>
+                                <div class="product__item__text">
+                                    <h5>@product.tbl_Albums?.Title</h5>
+                                    <ul>
+                                        <li>By: @product.tbl_Producers?.ProducerName</li>
+                                        <li>Stock: @product.StockQuantity</li>
+                                    </ul>
+                                    <div class="product__price">$@product.Price</div>
+                                </div>
+                            </a>
+
+                            <!-- Keep Add to Cart button outside the link -->
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                <input type="hidden" name="productId" value="@product.ProductID" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="add-cart-btn">+ Add To Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="categories-grid">
+    <div class="container">
+        <div class="section-header">
+            <h2>📦 Browse Categories</h2>
+            <p>Explore our extensive collection</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card games">
+                    <div class="category-content">
+                        <h3>Video Games</h3>
+                        <p>Latest releases for all platforms</p>
+                        <a asp-controller="Category" asp-action="Games" class="btn btn-outline-light">Explore</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card movies">
+                    <div class="category-content">
+                        <h3>Movies & DVDs</h3>
+                        <p>Classic and new releases</p>
+                        <a asp-controller="Category" asp-action="Movies" class="btn btn-outline-light">Explore</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card music">
+                    <div class="category-content">
+                        <h3>Music & Albums</h3>
+                        <p>CDs from your favorite artists</p>
+                        <a asp-controller="Category" asp-action="Music" class="btn btn-outline-light">Explore</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Special Offers -->
+<section class="special-offers">
+    <div class="container">
+        <div class="offer-banner">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="offer-content">
+                        <span class="offer-badge">Limited Time</span>
+                        <h2>Summer Sale!</h2>
+                        <p>Get up to 50% off on selected games and movies. Don't miss out on these amazing deals!</p>
+                        <div class="countdown-timer">
+                            <div class="countdown-item">
+                                <span id="days">00</span>
+                                <small>Days</small>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="hours">00</span>
+                                <small>Hours</small>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="minutes">00</span>
+                                <small>Minutes</small>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="seconds">00</span>
+                                <small>Seconds</small>
+                            </div>
+                        </div>
+                        <a href="#featured-products" class="btn btn-danger btn-lg">Shop Now</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="offer-image">
+                        <img src="/img/hero/sale-banner.png" alt="Summer Sale" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="new-arrivals">
+    <div class="container">
+        <div class="section-header">
+            <h2>🆕 New Arrivals</h2>
+            <p>Check out our latest additions</p>
+        </div>
+        <div class="row">
+            @if (ViewBag.NewArrivals != null)
+            {
+                foreach (var product in ViewBag.NewArrivals)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <partial name="_ProductCard" model="product" />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials bg-dark text-white">
+    <div class="container">
+        <div class="section-header">
+            <h2>⭐ What Our Customers Say</h2>
+            <p>Real reviews from real customers</p>
+        </div>
+        <div class="testimonials-slider">
+            <div class="testimonial-item">
+                <div class="testimonial-content">
+                    <p>"The best entertainment store I've ever used! Fast shipping and amazing prices."</p>
+                    <div class="testimonial-author">
+                        <img src="/img/testimonials/user1.jpg" alt="Sarah Johnson">
+                        <div>
+                            <h5>Sarah Johnson</h5>
+                            <span>Regular Customer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-item">
+                <div class="testimonial-content">
+                    <p>"Incredible selection of games and movies. Always find what I'm looking for!"</p>
+                    <div class="testimonial-author">
+                        <img src="/img/testimonials/user2.jpg" alt="Mike Chen">
+                        <div>
+                            <h5>Mike Chen</h5>
+                            <span>Game Collector</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter for the latest updates, offers, and new arrivals</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Hero Slider */
+    .hero-slider {
+        position: relative;
+        height: 100vh;
+        min-height: 600px;
+    }
+
+    .hero-slide {
+        height: 100vh;
+        min-height: 600px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(11, 12, 42, 0.8) 0%, rgba(26, 27, 58, 0.8) 100%);
+        }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+        .hero-content h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+    .hero-btns {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+        padding: 60px 0;
+        background: var(--bg-light);
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+        .stat-item i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-bg);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+    /* Section Headers */
+    .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+        .section-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            color: var(--dark-bg);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+    /* Categories Grid */
+    .categories-grid {
+        padding: 80px 0;
+    }
+
+    .category-card {
+        height: 300px;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+        .category-card.games {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .category-card.movies {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .category-card.music {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+    .category-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px;
+        color: white;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    }
+
+        .category-content h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+    /* Special Offers */
+    .special-offers {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+    }
+
+    .offer-banner {
+        background: rgba(255,255,255,0.1);
+        padding: 40px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .offer-badge {
+        background: white;
+        color: #ff6b6b;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .offer-content h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .countdown-timer {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .countdown-item {
+        background: rgba(255,255,255,0.2);
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        min-width: 80px;
+    }
+
+        .countdown-item span {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .countdown-item small {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+    /* Testimonials */
+    .testimonials {
+        padding: 80px 0;
+    }
+
+    .testimonial-item {
+        background: rgba(255,255,255,0.1);
+        padding: 30px;
+        border-radius: 15px;
+        margin: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .testimonial-content p {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+    /* Newsletter */
+    .newsletter {
+        padding: 80px 0;
+        background: var(--dark-bg);
+        color: white;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 1rem;
+        max-width: 500px;
+        margin: 2rem auto;
+    }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .newsletter-form button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .newsletter-form button:hover {
+                background: #c52a2b;
+                transform: translateY(-2px);
+            }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+        }
+
+        .hero-btns {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .countdown-timer {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    // Countdown Timer
+    function updateCountdown() {
+        const countdownDate = new Date();
+        countdownDate.setDate(countdownDate.getDate() + 7); // 7 days from now
+
+        const interval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").textContent = days.toString().padStart(2, '0');
+            document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
+
+            if (distance < 0) {
+                clearInterval(interval);
+                document.getElementById("countdown").innerHTML = "EXPIRED";
+            }
+        }, 1000);
+    }
+
+    // Initialize when page loads
+    $(document).ready(function() {
+        updateCountdown();
+
+        // Initialize sliders
+        $('.products-slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 3
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 2
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1
+                    }
+                }
+            ]
+        });
+
+        $('.testimonials-slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            adaptiveHeight: true
+        });
+    });
+</script>

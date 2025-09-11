@@ -1,0 +1,52 @@
+﻿@model IEnumerable<DvdStore.Models.HeroImage>
+@{
+    Layout = "Dashboard";
+    ViewData["Title"] = "Manage Hero Images";
+}
+
+<h2>Manage Hero Images</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Preview</th>
+            <th>Title</th>
+            <th>Subtitle</th>
+            <th>Order</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@item.ImageUrl" alt="@item.Title" style="height: 60px; width: auto; border-radius: 4px;">
+                </td>
+                <td>@item.Title</td>
+                <td>@item.Subtitle</td>
+                <td>@item.DisplayOrder</td>
+                <td>
+                    <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
+                        @(item.IsActive ? "Active" : "Inactive")
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.HeroImageID" class="btn btn-sm btn-primary">Edit</a>
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@item.HeroImageID" />
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this hero image?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,110 @@
+﻿@model DvdStore.Models.HeroImage
+@{
+    Layout = "Dashboard";
+    ViewData["Title"] = "Edit Hero Image";
+}
+
+<h2>Edit Hero Image</h2>
+
+<!-- Add this for debugging -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <h4>Validation Errors:</h4>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="HeroImageID" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label">Title *</label>
+                <input asp-for="Title" class="form-control" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Subtitle" class="control-label">Subtitle</label>
+                <textarea asp-for="Subtitle" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Subtitle" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ButtonText" class="control-label">Button Text</label>
+                <input asp-for="ButtonText" class="form-control" />
+                <span asp-validation-for="ButtonText" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ButtonLink" class="control-label">Button Link</label>
+                <input asp-for="ButtonLink" class="form-control" />
+                <span asp-validation-for="ButtonLink" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label asp-for="DisplayOrder" class="control-label">Display Order</label>
+                <input asp-for="DisplayOrder" class="form-control" type="number" />
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label">Active</label>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">New Hero Image (optional)</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                <small class="form-text text-muted">Leave empty to keep current image</small>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="form-group mb-3">
+                    <label class="control-label">Current Image:</label>
+                    <img src="@Model.ImageUrl" alt="Current hero image"
+                         style="max-width: 100%; height: 200px; object-fit: cover; border-radius: 5px;" />
+                    <div class="mt-2">
+                        <small class="text-muted">@Model.ImageUrl</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Simple form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const titleInput = document.querySelector('[name="Title"]');
+
+            if (!titleInput.value.trim()) {
+                e.preventDefault();
+                alert('Please enter a title for the hero image.');
+                titleInput.focus();
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        });
+    </script>
+}

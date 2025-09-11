@@ -4,6 +4,7 @@ using DvdStore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdStore.Migrations
 {
     [DbContext(typeof(DvdDbContext))]
-    partial class DvdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250911191949_HeroImageAdded")]
+    partial class HeroImageAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("tbl_Albums", (string)null);
+                    b.ToTable("tbl_Albums");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Artists", b =>
@@ -84,7 +87,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("ArtistID");
 
-                    b.ToTable("tbl_Artists", (string)null);
+                    b.ToTable("tbl_Artists");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Cart", b =>
@@ -105,7 +108,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Carts", (string)null);
+                    b.ToTable("tbl_Carts");
                 });
 
             modelBuilder.Entity("DvdStore.Models.CartItems", b =>
@@ -131,7 +134,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("tbl_CartItems", (string)null);
+                    b.ToTable("tbl_CartItems");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Category", b =>
@@ -152,7 +155,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("tbl_Category", (string)null);
+                    b.ToTable("tbl_Category");
                 });
 
             modelBuilder.Entity("DvdStore.Models.HeroImage", b =>
@@ -199,52 +202,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("HeroImageID");
 
-                    b.ToTable("tbl_HeroImages", (string)null);
-                });
-
-            modelBuilder.Entity("DvdStore.Models.NewsPromotion", b =>
-                {
-                    b.Property<int>("NewsID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NewsID"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PublishDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("NewsID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("tbl_NewsPromotions", (string)null);
+                    b.ToTable("tbl_HeroImages");
                 });
 
             modelBuilder.Entity("DvdStore.Models.OrderDetails", b =>
@@ -273,7 +231,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("tbl_OrderDetails", (string)null);
+                    b.ToTable("tbl_OrderDetails");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Orders", b =>
@@ -306,7 +264,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Orders", (string)null);
+                    b.ToTable("tbl_Orders");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Payments", b =>
@@ -344,7 +302,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("tbl_Payments", (string)null);
+                    b.ToTable("tbl_Payments");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Producers", b =>
@@ -368,44 +326,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("ProducerID");
 
-                    b.ToTable("tbl_Producers", (string)null);
-                });
-
-            modelBuilder.Entity("DvdStore.Models.ProductReviews", b =>
-                {
-                    b.Property<int>("ReviewID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReviewID");
-
-                    b.HasIndex("ProductID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("tbl_ProductReviews", (string)null);
+                    b.ToTable("tbl_Producers");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Products", b =>
@@ -457,7 +378,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("tbl_Products", (string)null);
+                    b.ToTable("tbl_Products");
                 });
 
             modelBuilder.Entity("DvdStore.Models.PurchaseInvoice", b =>
@@ -485,7 +406,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("tbl_PurchaseInvoices", (string)null);
+                    b.ToTable("tbl_PurchaseInvoices");
                 });
 
             modelBuilder.Entity("DvdStore.Models.PurchaseInvoiceDetail", b =>
@@ -514,7 +435,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("PurchaseInvoiceID");
 
-                    b.ToTable("tbl_PurchaseInvoiceDetails", (string)null);
+                    b.ToTable("tbl_PurchaseInvoiceDetails");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Songs", b =>
@@ -547,7 +468,7 @@ namespace DvdStore.Migrations
 
                     b.HasIndex("AlbumID");
 
-                    b.ToTable("tbl_Songs", (string)null);
+                    b.ToTable("tbl_Songs");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Suppliers", b =>
@@ -571,7 +492,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("SupplierID");
 
-                    b.ToTable("tbl_Suppliers", (string)null);
+                    b.ToTable("tbl_Suppliers");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Users", b =>
@@ -603,7 +524,7 @@ namespace DvdStore.Migrations
 
                     b.HasKey("UserID");
 
-                    b.ToTable("tbl_Users", (string)null);
+                    b.ToTable("tbl_Users");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Albums", b =>
@@ -651,15 +572,6 @@ namespace DvdStore.Migrations
                     b.Navigation("tbl_Products");
                 });
 
-            modelBuilder.Entity("DvdStore.Models.NewsPromotion", b =>
-                {
-                    b.HasOne("DvdStore.Models.Products", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("DvdStore.Models.OrderDetails", b =>
                 {
                     b.HasOne("DvdStore.Models.Orders", "tbl_Orders")
@@ -703,25 +615,6 @@ namespace DvdStore.Migrations
                     b.Navigation("tbl_Orders");
 
                     b.Navigation("tbl_Users");
-                });
-
-            modelBuilder.Entity("DvdStore.Models.ProductReviews", b =>
-                {
-                    b.HasOne("DvdStore.Models.Products", "Product")
-                        .WithMany("tbl_ProductReviews")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DvdStore.Models.Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Products", b =>
@@ -796,11 +689,6 @@ namespace DvdStore.Migrations
             modelBuilder.Entity("DvdStore.Models.Orders", b =>
                 {
                     b.Navigation("tbl_OrderDetails");
-                });
-
-            modelBuilder.Entity("DvdStore.Models.Products", b =>
-                {
-                    b.Navigation("tbl_ProductReviews");
                 });
 
             modelBuilder.Entity("DvdStore.Models.PurchaseInvoice", b =>

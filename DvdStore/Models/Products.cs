@@ -13,7 +13,7 @@ namespace DvdStore.Models
         [ForeignKey("AlbumID")]
         public Albums? tbl_Albums { get; set; }
 
-        //  Supplier
+        // Supplier
         public int? SupplierID { get; set; }
         [ForeignKey("SupplierID")]
         public Suppliers? tbl_Suppliers { get; set; }
@@ -23,9 +23,9 @@ namespace DvdStore.Models
         [ForeignKey("ProducerID")]
         public Producers? tbl_Producers { get; set; }
 
-        // Inventory aur Price Management
+        // Inventory and Price Management
         [StringLength(100)]
-        public string? SKU { get; set; }   // Unique Code
+        public string? SKU { get; set; }
 
         public int StockQuantity { get; set; } = 0;
 
@@ -44,5 +44,15 @@ namespace DvdStore.Models
         public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // ADD THIS NAVIGATION PROPERTY
+        public ICollection<ProductReviews> tbl_ProductReviews { get; set; }
+
+        // NotMapped properties for calculated values
+        [NotMapped]
+        public double AverageRating { get; set; }
+
+        [NotMapped]
+        public int ReviewCount { get; set; }
     }
 }

@@ -22,10 +22,24 @@ namespace DvdStore.Models
         public DbSet<PurchaseInvoice> tbl_PurchaseInvoices { get; set; }
         public DbSet<PurchaseInvoiceDetail> tbl_PurchaseInvoiceDetails { get; set; }
         public DbSet<Songs> tbl_Songs { get; set; }
+        // Hero Image
+        public DbSet<HeroImage> tbl_HeroImages { get; set; }
+        public DbSet<ProductReviews> tbl_ProductReviews { get; set; }
+        public DbSet<NewsPromotion> tbl_NewsPromotions { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure the relationship between Product and ProductReview
+            modelBuilder.Entity<ProductReviews>()
+                .HasOne(pr => pr.Product)
+                .WithMany(p => p.tbl_ProductReviews)
+                .HasForeignKey(pr => pr.ProductID)
+                .OnDelete(DeleteBehavior.Cascade);
 
-
-
-
-
+            modelBuilder.Entity<ProductReviews>()
+                .HasOne(pr => pr.User)
+                .WithMany()
+                .HasForeignKey(pr => pr.UserID)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

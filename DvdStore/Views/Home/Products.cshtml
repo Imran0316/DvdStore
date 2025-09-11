@@ -45,28 +45,31 @@
                 <div class="row">
                     @foreach (var product in Model)
                     {
+                        <!-- Replace the current product card with this -->
                         <div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg"
-                                     style="background-image: url('@Url.Content(product.ProductImageUrl)');">
-                                    <div class="ep">$@product.Price</div>
-                                    <div class="view"><i class="fa fa-shopping-cart"></i> Add to Cart</div>
-                                </div>
-                                <div class="product__item__text">
-                                    <h5><a href="#">@product.tbl_Albums?.Title</a></h5>
-                                    <ul>
-                                        <li>By: @product.tbl_Producers?.ProducerName</li>
-                                        <li>Stock: @product.StockQuantity</li>
-                                    </ul>
-                                    <div class="product__price">$@product.Price</div>
-                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" value="@product.ProductID" />
-                                        <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="add-cart-btn" style="background: none; border: none; color: #e53637; cursor: pointer;">
-                                            + Add To Cart
-                                        </button>
-                                    </form>
-                                </div>
+                                <a href="@Url.Action("Index", "ProductDetail", new { id = product.ProductID })"
+                                   style="text-decoration: none; color: inherit;">
+                                    <div class="product__item__pic set-bg"
+                                         style="background-image: url('@Url.Content(product.ProductImageUrl)');">
+                                        <div class="ep">$@product.Price</div>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <h5>@product.tbl_Albums?.Title</h5>
+                                        <ul>
+                                            <li>By: @product.tbl_Producers?.ProducerName</li>
+                                            <li>Stock: @product.StockQuantity</li>
+                                        </ul>
+                                        <div class="product__price">$@product.Price</div>
+                                    </div>
+                                </a>
+
+                                <!-- Keep Add to Cart button outside the link -->
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                    <input type="hidden" name="productId" value="@product.ProductID" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="add-cart-btn">+ Add To Cart</button>
+                                </form>
                             </div>
                         </div>
                     }
