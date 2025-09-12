@@ -1,0 +1,97 @@
+﻿@model DvdStore.Models.Orders
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "_Layout1";
+}
+
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="hero__text">
+                    <h2>Order Details - #@Model.OrderID</h2>
+                    <p>Order placed on @Model.OrderDate.ToString("MMMM dd, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Order Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Order #:</strong> #@Model.OrderID</p>
+                        <p><strong>Order Date:</strong> @Model.OrderDate.ToString("MMMM dd, yyyy hh:mm tt")</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-@(Model.Status == "Completed" ? "success" : 
+                                                  Model.Status == "Processing" ? "warning" : 
+                                                  Model.Status == "Shipped" ? "info" : "secondary")">
+                                @Model.Status
+                            </span>
+                        </p>
+                        <p><strong>Total Amount:</strong> $@Model.TotalAmount.ToString("N2")</p>
+                        <p><strong>Shipping Address:</strong> @Model.ShippingAddress</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In OrderDetails.cshtml -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Order Items</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.tbl_OrderDetails != null && Model.tbl_OrderDetails.Any())
+                        {
+                            @foreach (var item in Model.tbl_OrderDetails)
+                            {
+                                <div class="d-flex mb-3">
+                                    @if (!string.IsNullOrEmpty(item.tbl_Products?.ProductImageUrl))
+                                    {
+                                        <img src="@item.tbl_Products.ProductImageUrl"
+                                             alt="@item.tbl_Products.tbl_Albums?.Title"
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                    }
+                                    else
+                                    {
+                                        <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    }
+                                    <div class="ms-3">
+                                        <h6>@(item.tbl_Products?.tbl_Albums?.Title ?? "Unknown Product")</h6>
+                                        <p class="mb-0">Quantity: @item.Quantity</p>
+                                        <p class="mb-0">Price: $@item.UnitPrice.ToString("N2")</p>
+                                        <p class="mb-0">Total: $@((item.Quantity * item.UnitPrice).ToString("N2"))</p>
+                                    </div>
+                                </div>
+                                <hr>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-3">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                                <p class="text-muted">No order items found</p>
+                                <small class="text-muted">Order ID: @Model.OrderID</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="@Url.Action("Index", "Profile")" class="btn btn-primary">
+                Back to Profile
+            </a>
+        </div>
+    </div>
+</section>
