@@ -9,7 +9,7 @@ using System.IO; // Add this for Path.Combine
 
 namespace DvdStore.Controllers
 {
-    public class NewsPromotionController : BaseAdminController
+    public class NewsPromotionController : Controller
     {
         private readonly DvdDbContext _context;
 
@@ -177,6 +177,7 @@ namespace DvdStore.Controllers
             return View(item);
         }
 
+        // POST: Admin - Edit news/promotion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, NewsPromotion item, IFormFile imageFile)
@@ -185,8 +186,22 @@ namespace DvdStore.Controllers
 
             if (id != item.NewsID) return NotFound();
 
-            // Remove validation for ImageUrl
+            Console.WriteLine("=== EDIT METHOD STARTED ===");
+            Console.WriteLine($"Editing item ID: {id}, ModelState IsValid: {ModelState.IsValid}");
+
+            // FIX: REMOVE VALIDATION FOR THESE PROPERTIES
             ModelState.Remove("ImageUrl");
+            ModelState.Remove("Product");    // Add this line
+            ModelState.Remove("ProductID");  // Add this line
+
+            // Log all errors
+            foreach (var state in ModelState)
+            {
+                foreach (var error in state.Value.Errors)
+                {
+                    Console.WriteLine($"Error in {state.Key}: {error.ErrorMessage}");
+                }
+            }
 
             if (ModelState.IsValid)
             {
@@ -194,6 +209,8 @@ namespace DvdStore.Controllers
                 {
                     var existingItem = await _context.tbl_NewsPromotions.FindAsync(id);
                     if (existingItem == null) return NotFound();
+
+                    Console.WriteLine($"Found existing item: {existingItem.Title}");
 
                     // Handle image upload
                     if (imageFile != null && imageFile.Length > 0)
@@ -236,6 +253,12 @@ namespace DvdStore.Controllers
                         existingItem.ImageUrl = "/uploads/news/" + fileName;
                     }
 
+                    // FIX: Ensure ProductID is properly handled
+                    if (item.ProductID == 0) // If 0 is passed (default), set to null
+                    {
+                        item.ProductID = null;
+                    }
+
                     // Update other fields
                     existingItem.Title = item.Title;
                     existingItem.Content = item.Content;
@@ -248,13 +271,14 @@ namespace DvdStore.Controllers
                     _context.Update(existingItem);
                     await _context.SaveChangesAsync();
 
-                    // FIXED: Use existingItem instead of item
-                    await SendNewsNotification(existingItem);   // CORRECT NOW
+                    Console.WriteLine("Item updated successfully!");
+                    await SendNewsNotification(existingItem);
 
                     return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
+                    Console.WriteLine($"Concurrency error: {ex.Message}");
                     if (!NewsPromotionExists(item.NewsID))
                     {
                         return NotFound();
@@ -264,6 +288,15 @@ namespace DvdStore.Controllers
                         throw;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"General error: {ex.Message}");
+                    ModelState.AddModelError("", "An error occurred while updating: " + ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Model validation failed");
             }
 
             ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();

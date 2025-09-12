@@ -6,6 +6,22 @@
 
 <h2>Edit News/Promotion</h2>
 
+
+<!-- DEBUG: Show model state errors -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <h5>Validation Errors:</h5>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="NewsID" />
 
