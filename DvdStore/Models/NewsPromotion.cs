@@ -27,9 +27,10 @@ namespace DvdStore.Models
 
         public bool IsActive { get; set; } = true;
 
-        public int? ProductID { get; set; }
+        public int? ProductID { get; set; } // Make this nullable
 
+        // FIX: Make the navigation property virtual and nullable
         [ForeignKey("ProductID")]
-        public Products Product { get; set; }
+        public virtual Products? Product { get; set; } // Add ? to make it nullable
     }
 }

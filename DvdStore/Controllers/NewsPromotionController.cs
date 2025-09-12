@@ -1,6 +1,11 @@
 ﻿using DvdStore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.IO; // Add this for Path.Combine
 
 namespace DvdStore.Controllers
 {
@@ -46,11 +51,28 @@ namespace DvdStore.Controllers
         {
             if (!IsAdminUser()) return RedirectToAction("Login", "Auth");
 
-            // Remove validation for ImageUrl since we set it programmatically
+            // DEBUG: Log model state
+            Console.WriteLine("=== CREATE METHOD STARTED ===");
+            Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
+
+            // FIX: REMOVE VALIDATION FOR THESE PROPERTIES
             ModelState.Remove("ImageUrl");
+            ModelState.Remove("Product");    // Add this line
+            ModelState.Remove("ProductID");  // Add this line
+
+            // Log all errors
+            foreach (var state in ModelState)
+            {
+                foreach (var error in state.Value.Errors)
+                {
+                    Console.WriteLine($"Error in {state.Key}: {error.ErrorMessage}");
+                }
+            }
 
             if (ModelState.IsValid)
             {
+                Console.WriteLine("Model is valid, processing...");
+
                 // Handle image upload
                 if (imageFile != null && imageFile.Length > 0)
                 {
@@ -82,14 +104,61 @@ namespace DvdStore.Controllers
                     item.ImageUrl = "/uploads/news/" + fileName;
                 }
 
+                // FIX: Ensure ProductID is properly handled
+                if (item.ProductID == 0) // If 0 is passed (default), set to null
+                {
+                    item.ProductID = null;
+                }
+
                 _context.tbl_NewsPromotions.Add(item);
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("Item saved successfully!");
+                await SendNewsNotification(item);
                 return RedirectToAction("Index");
             }
 
+            // If we get here, something went wrong - redisplay form
+            Console.WriteLine("Model validation failed - redisplaying form");
             ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
             return View(item);
         }
+
+
+
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(NewsPromotion item, IFormFile imageFile)
+        //{
+        //    // TEMPORARY: Skip admin check and image upload for testing
+        //    Console.WriteLine("CREATE called with: " + item.Title);
+
+        //    // Manually validate required fields
+        //    if (string.IsNullOrEmpty(item.Title) || string.IsNullOrEmpty(item.Content))
+        //    {
+        //        ModelState.AddModelError("", "Title and Content are required");
+        //    }
+        //    else
+        //    {
+        //        // Simple save without image
+        //        item.ImageUrl = "/images/placeholder.jpg"; // Temporary placeholder
+        //        item.PublishDate = DateTime.Now;
+
+        //        _context.tbl_NewsPromotions.Add(item);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
+        //    return View(item);
+        //}
+
+
+
+
+
 
         // GET: Admin - Edit form
         public async Task<IActionResult> Edit(int? id)
@@ -108,7 +177,6 @@ namespace DvdStore.Controllers
             return View(item);
         }
 
-        // POST: Admin - Edit news/promotion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, NewsPromotion item, IFormFile imageFile)
@@ -179,6 +247,11 @@ namespace DvdStore.Controllers
 
                     _context.Update(existingItem);
                     await _context.SaveChangesAsync();
+
+                    // FIXED: Use existingItem instead of item
+                    await SendNewsNotification(existingItem);   // CORRECT NOW
+
+                    return RedirectToAction("Index");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -191,7 +264,6 @@ namespace DvdStore.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
             }
 
             ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
@@ -233,5 +305,58 @@ namespace DvdStore.Controllers
         {
             return HttpContext.Session.GetInt32("UserId") != null;
         }
-    }
-}
+
+
+        // GET: Public News Page
+        public async Task<IActionResult> News(string type = "")
+        {
+            Console.WriteLine("=== NEWS METHOD CALLED ===");
+
+            var query = _context.tbl_NewsPromotions
+                .Include(n => n.Product)
+                .ThenInclude(p => p.tbl_Albums)
+                .Where(n => n.IsActive && n.PublishDate <= DateTime.Now &&
+                           (n.ExpiryDate == null || n.ExpiryDate >= DateTime.Now));
+
+            // Filter by type if specified
+            if (!string.IsNullOrEmpty(type))
+            {
+                query = query.Where(n => n.Type == type);
+            }
+
+            var news = await query.OrderByDescending(n => n.PublishDate).ToListAsync();
+
+            // DEBUG: Log what's being returned
+            Console.WriteLine($"Found {news.Count} news items");
+            foreach (var item in news)
+            {
+                Console.WriteLine($"- {item.Title} (Active: {item.IsActive}, Publish: {item.PublishDate}, Expiry: {item.ExpiryDate})");
+            }
+
+            ViewBag.SelectedType = type;
+            return View(news);
+        }
+
+
+        private async Task SendNewsNotification(NewsPromotion newsItem)
+        {
+            try
+            {
+                // Get all users who opted in for notifications
+                var subscribers = await _context.tbl_Users
+                    .Where(u => u.Role == "Customer") // Only customers
+                    .ToListAsync();
+
+                foreach (var user in subscribers)
+                {
+                    // Here you would integrate with your email service
+                    Console.WriteLine($"Would send email to {user.Email} about: {newsItem.Title}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Email notification error: {ex.Message}");
+            }
+        }
+    }  
+}     

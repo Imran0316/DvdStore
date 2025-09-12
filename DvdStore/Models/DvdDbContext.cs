@@ -50,6 +50,12 @@ namespace DvdStore.Models
                 .WithOne(pr => pr.Product)
                 .HasForeignKey(pr => pr.ProductID)
                 .IsRequired(false);
+
+            modelBuilder.Entity<NewsPromotion>()
+    .HasOne(np => np.Product)
+    .WithMany()
+    .HasForeignKey(np => np.ProductID)
+    .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

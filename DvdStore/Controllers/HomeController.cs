@@ -25,6 +25,19 @@ public class HomeController : Controller
         ViewBag.HeroImages = heroImages;
 
 
+        // Get latest news for homepage
+        var latestNews = await _context.tbl_NewsPromotions
+            .Include(n => n.Product)
+            .ThenInclude(p => p.tbl_Albums)
+            .Where(n => n.IsActive && n.PublishDate <= DateTime.Now &&
+                       (n.ExpiryDate == null || n.ExpiryDate >= DateTime.Now))
+            .OrderByDescending(n => n.PublishDate)
+            .Take(3)
+            .ToListAsync();
+
+        ViewBag.LatestNews = latestNews;
+
+
         // Featured Products (handpicked - newest products)
         var featuredProducts = _context.tbl_Products
             .Include(p => p.tbl_Albums)

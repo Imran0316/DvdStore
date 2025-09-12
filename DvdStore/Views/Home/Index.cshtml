@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Microsoft.EntityFrameworkCore
+@{
     ViewData["Title"] = "Home - EntertainmentHub";
     Layout = "_Layout1";
 }
@@ -309,18 +310,67 @@
     </div>
 </section>
 
-<!-- Newsletter -->
-<section class="newsletter">
+<!-- Add this section to your homepage -->
+<section class="latest-news bg-light py-5">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2>Stay Updated</h2>
-                <p>Subscribe to our newsletter for the latest updates, offers, and new arrivals</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Enter your email" required>
-                    <button type="submit">Subscribe</button>
-                </form>
-            </div>
+        <div class="section-header">
+            <h2>📢 Latest News & Offers</h2>
+            <p>Stay updated with our latest announcements and promotions</p>
+        </div>
+
+        <div class="row">
+            @{
+                var latestNews = ViewBag.LatestNews as IEnumerable<DvdStore.Models.NewsPromotion> ?? new List<DvdStore.Models.NewsPromotion>();
+            }
+
+            @if (latestNews.Any())
+            {
+                foreach (var newsItem in latestNews)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            @if (!string.IsNullOrEmpty(newsItem.ImageUrl))
+                            {
+                                <img src="@newsItem.ImageUrl" class="card-img-top" alt="@newsItem.Title"
+                                     style="height: 180px; object-fit: cover;">
+                            }
+                            <div class="card-body">
+                                <span class="badge bg-@(newsItem.Type == "News" ? "info" : newsItem.Type == "Promotion" ? "warning" : "success") mb-2">
+                                    @newsItem.Type
+                                </span>
+                                <h6 class="card-title">@newsItem.Title</h6>
+                                <p class="card-text small">
+                                    @(newsItem.Content.Length > 100 ? newsItem.Content.Substring(0, 100) + "..." : newsItem.Content)
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="@Url.Action("News", "NewsPromotion")" class="btn btn-sm btn-outline-primary">
+                                    Read More
+                                </a>
+                                @if (newsItem.ProductID.HasValue)
+                                {
+                                    <a href="@Url.Action("Index", "ProductDetail", new { id = newsItem.ProductID })"
+                                       class="btn btn-sm btn-outline-secondary ms-2">
+                                        View Product
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="col-12 text-center mt-4">
+                    <a href="@Url.Action("News", "NewsPromotion")" class="btn btn-primary">
+                        View All News & Promotions
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">No recent news or promotions. Check back later!</p>
+                </div>
+            }
         </div>
     </div>
 </section>
