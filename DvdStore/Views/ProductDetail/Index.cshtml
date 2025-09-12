@@ -12,6 +12,33 @@
                 <img src="@Model.ProductImageUrl" alt="@Model.tbl_Albums?.Title"
                      class="img-fluid rounded" style="max-height: 500px; width: 100%; object-fit: cover;">
             </div>
+            @if (Model.tbl_Albums?.tbl_Songs?.Any() == true)
+            {
+                <ul class="list-group w-100">
+                    
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle mt-2 w-100" type="button" id="songsDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                Songs
+                            </button>
+
+                        <ul class="dropdown-menu w-100" aria-labelledby="songsDropdown">
+                            @foreach (var s in Model.tbl_Albums.tbl_Songs)
+                            {
+                                <li class="dropdown-item song-item">
+                                    <div class="song-title">@s.Title</div>
+                                    <audio controls class="song-audio">
+                                        <source src="@s.FileUrl" type="audio/mp3" />
+                                    </audio>
+                                </li>
+                                }
+                            </ul>
+                        </div>
+
+                    
+                </ul>
+            }
+
         </div>
 
         <!-- Product Info -->
@@ -217,6 +244,51 @@
 </div>
 
 <style>
+    .song-item {
+        display: flex;
+        justify-content: space-between; /* Title aur audio player ko alag alag end pe rakhega */
+        align-items: center; /* Vertically center karega */
+        padding: 10px 15px; /* Thodi space add karega */
+        border-bottom: 1px solid #eee; /* Items ke beech line */
+    }
+
+        .song-item:last-child {
+            border-bottom: none; /* Last item se line hata dega */
+        }
+
+    .song-title {
+        flex-grow: 1; /* Title ko zyada space dega */
+        margin-right: 15px; /* Title aur audio ke beech space */
+        font-weight: bold;
+        white-space: nowrap; /* Title ko ek line mein rakhega */
+        overflow: hidden; /* Agar title bada ho to hide karega */
+        text-overflow: ellipsis; /* ... show karega */
+    }
+
+    .song-audio {
+        /* Audio player ko chota karne ke liye */
+        width: 300px; /* Ya koi aur value jo aap chahen */
+        height: 30px; /* Height adjust kar sakte hain */
+    }
+
+    /* Jab screen choti ho (mobile devices) */
+    @@media (max-width: 768px) {
+        .song-item
+
+    {
+        flex-direction: column; /* Items ko column mein rakhega */
+        align-items: flex-start; /* Left align karega */
+    }
+
+    .song-title {
+        margin-bottom: 10px; /* Title aur audio ke beech space */
+    }
+
+    .song-audio {
+        width: 100%; /* Audio player ko poori width dega */
+    }
+
+    }
     .rating-input {
         display: flex;
         flex-direction: row-reverse;

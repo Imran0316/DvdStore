@@ -248,7 +248,7 @@
                     <i class="fa fa-home"></i><span class="nav-text"> Dashboard</span>
                 </a>
 
-                <a class="nav-link @(ctrl == "account" ? "active" : "")" asp-controller="Account" asp-action="Profile">
+                <a class="nav-link @(ctrl == "admin" ? "active" : "")" asp-controller="Admin" asp-action="Profile">
                     <i class="fa fa-user"></i><span class="nav-text"> Profile</span>
                 </a>
 
@@ -292,6 +292,10 @@
 
                 <a class="nav-link @(ctrl == "reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
                     <i class="fa fa-chart-line"></i><span class="nav-text"> Reports</span>
+                </a>
+
+                <a class="nav-link @(ctrl == "Users" ? "active" : "")" asp-controller="Admin" asp-action="Users">
+                    <i class="fa fa-chart-line"></i><span class="nav-text"> Users</span>
                 </a>
 
                 <a class="nav-link @(ctrl == "HeroImages" ? "active" : "")" asp-controller="HeroImages" asp-action="Index">

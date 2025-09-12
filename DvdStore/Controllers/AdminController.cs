@@ -1,8 +1,5 @@
 ﻿using DvdStore.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DvdStore.Controllers
 {
@@ -13,83 +10,82 @@ namespace DvdStore.Controllers
         {
             db = context;
         }
-        public IActionResult index()
+
+        // Dashboard
+        public IActionResult Index()
         {
+            // ✅ Ensure only admins can access
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
             return View();
         }
 
-
-        // fetch all Users
+        // Fetch all Users
         public IActionResult Users()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var users = db.tbl_Users.ToList();
             return View(users);
         }
-        //Delete Users
+
+        // Delete Users
         public IActionResult Delete(int id)
         {
-            var user = db.tbl_Users.FirstOrDefault(u => u.UserID == id);
-            if (user == null)
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
             {
-                return NotFound();
+                return RedirectToAction("Login", "Auth");
             }
+
+            var user = db.tbl_Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null) return NotFound();
 
             db.tbl_Users.Remove(user);
             db.SaveChanges();
-
             return RedirectToAction("Users");
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Auth");
+        }
+        // GET: /Admin/Profile
+        public IActionResult Profile()
+        {
+            // Session se current AdminID le lo
+            var adminId = HttpContext.Session.GetInt32("UserId");
+            if (adminId == null) return RedirectToAction( "Login", "Auth");
 
+            var admin = db.tbl_Users.FirstOrDefault(u => u.UserID == adminId);
+            if (admin == null) return NotFound();
+
+            return View(admin);
+        }
+
+        // POST: /Admin/Profile (for updating)
         [HttpPost]
-        public IActionResult CreateAdmin(string Name, string Email, string Phone, string Password)
+        [ValidateAntiForgeryToken]
+        public IActionResult Profile(Users model)
         {
-            if (!AuthorizationHelper.IsAdmin(HttpContext))
-                return RedirectToAction("Login", "Auth");
+            var adminId = HttpContext.Session.GetInt32("UserId");
+            if (adminId == null) return RedirectToAction("Login");
 
-            // Check if email exists
-            var existingUser = db.tbl_Users.FirstOrDefault(u => u.Email == Email);
-            if (existingUser != null)
-            {
-                TempData["Error"] = "Email already exists";
-                return RedirectToAction("Users");
-            }
+            var admin = db.tbl_Users.FirstOrDefault(u => u.UserID == adminId);
+            if (admin == null) return NotFound();
 
-            var passwordHasher = new PasswordHasher<Users>();
-            var hashedPassword = passwordHasher.HashPassword(null, Password);
+            // Update only allowed fields
+            admin.Name = model.Name;
+            admin.Phone = model.Phone;
 
-            var newAdmin = new Users
-            {
-                Name = Name,
-                Email = Email,
-                Phone = Phone,
-                Password = hashedPassword,
-                Role = "Admin",
-                Created_At = DateTime.Now
-            };
-
-            db.tbl_Users.Add(newAdmin);
             db.SaveChanges();
-
-            TempData["Success"] = "Admin created successfully";
-            return RedirectToAction("Users");
-        }
-
-        [HttpGet]
-        public IActionResult MakeAdmin(int id)
-        {
-            if (!AuthorizationHelper.IsAdmin(HttpContext))
-                return RedirectToAction("Login", "Auth");
-
-            var user = db.tbl_Users.FirstOrDefault(u => u.UserID == id);
-            if (user != null)
-            {
-                user.Role = "Admin";
-                db.SaveChanges();
-                TempData["Success"] = "User promoted to admin";
-            }
-
-            return RedirectToAction("Users");
+            ViewBag.Success = "Profile updated!";
+            return View(admin);
         }
 
     }

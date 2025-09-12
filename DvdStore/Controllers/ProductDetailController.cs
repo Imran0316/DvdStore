@@ -17,15 +17,14 @@ namespace DvdStore.Controllers
         // In ProductDetailController.cs - Temporary fix
         public async Task<IActionResult> Index(int id)
         {
-            // Load product without reviews first
             var product = await _context.tbl_Products
-                .Include(p => p.tbl_Albums)
-                    .ThenInclude(a => a.tbl_Artists)
-                .Include(p => p.tbl_Albums)
-                    .ThenInclude(a => a.tbl_Category)
-                .Include(p => p.tbl_Producers)
-                .Include(p => p.tbl_Suppliers)
-                .FirstOrDefaultAsync(p => p.ProductID == id && p.IsActive);
+     .Include(p => p.tbl_Albums!.tbl_Artists)
+     .Include(p => p.tbl_Albums!.tbl_Category)
+     .Include(p => p.tbl_Albums!.tbl_Songs)  // 🔑 Direct include of songs
+     .Include(p => p.tbl_Producers)
+     .Include(p => p.tbl_Suppliers)
+     .FirstOrDefaultAsync(p => p.ProductID == id && p.IsActive);
+
 
             if (product == null)
             {

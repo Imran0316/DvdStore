@@ -11,26 +11,6 @@
         <div class="card-header">
             <h5>Create New Admin</h5>
         </div>
-        <div class="card-body">
-            <form asp-controller="Admin" asp-action="CreateAdmin" method="post">
-                <div class="row">
-                    <div class="col-md-3">
-                        <input name="Name" class="form-control" placeholder="Full Name" required />
-                    </div>
-                    <div class="col-md-3">
-                        <input name="Email" type="email" class="form-control" placeholder="Email" required />
-                    </div>
-                    <div class="col-md-3">
-                        <input name="Phone" class="form-control" placeholder="Phone" required />
-                    </div>
-                    <div class="col-md-3">
-                        <input name="Password" type="password" class="form-control" placeholder="Password" required />
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success mt-2">Create Admin</button>
-            </form>
-        </div>
-    </div>
 
     <table class="table table-bordered table-striped">
         <thead>

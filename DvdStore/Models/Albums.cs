@@ -32,5 +32,8 @@ namespace DvdStore.Models
         public string? CoverImageUrl { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [ValidateNever]
+        public ICollection<Songs> tbl_Songs { get; set; } = new List<Songs>();
     }
 }
