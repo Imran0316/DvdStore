@@ -8,38 +8,91 @@
     <div class="row">
         <!-- Product Images -->
         <div class="col-md-6">
-            <div class="product-image-main">
-                <img src="@Model.ProductImageUrl" alt="@Model.tbl_Albums?.Title"
-                     class="img-fluid rounded" style="max-height: 500px; width: 100%; object-fit: cover;">
+            <div id="mediaContainer" class="position-relative mb-3">
+                <!-- Main Product Image -->
+                <img id="mainImage"
+                     src="@Model.ProductImageUrl"
+                     alt="@Model.tbl_Albums?.Title"
+                     class="img-fluid rounded w-100"
+                     style="max-height:500px;object-fit:cover;">
+
+                @* Hidden trailer iframe – shown only when user clicks *@
+                @{
+                    string embedUrl = null;
+                    if (!string.IsNullOrEmpty(Model.TrailerUrl))
+                    {
+                        var raw = Model.TrailerUrl.Trim();
+
+                        // convert to embed format
+                        if (raw.Contains("youtu.be/"))
+                        {
+                            var id = raw.Split("youtu.be/")[1].Split('?')[0];
+                            embedUrl = $"https://www.youtube.com/embed/{id}";
+                        }
+                        else if (raw.Contains("watch?v="))
+                        {
+                            var id = raw.Split("watch?v=")[1].Split('&')[0];
+                            embedUrl = $"https://www.youtube.com/embed/{id}";
+                        }
+                    }
+                }
+                @if (!string.IsNullOrEmpty(embedUrl))
+                {
+                    <div id="mainTrailer" class="ratio ratio-16x9 d-none">
+                        <iframe src="@embedUrl"
+                                frameborder="0"
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                        </iframe>
+                    </div>
+                }
             </div>
-            @if (Model.tbl_Albums?.tbl_Songs?.Any() == true)
-            {
-                <ul class="list-group w-100">
-                    
-                        <div class="dropdown ">
-                            <button class="btn btn-secondary dropdown-toggle mt-2 w-100" type="button" id="songsDropdown"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                Songs
-                            </button>
 
-                        <ul class="dropdown-menu w-100" aria-labelledby="songsDropdown">
-                            @foreach (var s in Model.tbl_Albums.tbl_Songs)
-                            {
-                                <li class="dropdown-item song-item">
-                                    <div class="song-title">@s.Title</div>
-                                    <audio controls class="song-audio">
-                                        <source src="@s.FileUrl" type="audio/mp3" />
-                                    </audio>
-                                </li>
-                                }
-                            </ul>
-                        </div>
+            <!-- Thumbnails: image + trailer switcher -->
+            <div class="d-flex gap-2">
+                <img src="@Model.ProductImageUrl"
+                     class="img-thumbnail thumb-switch active-thumb"
+                     style="height:80px;width:80px;object-fit:cover;cursor:pointer"
+                     data-type="image" />
 
-                    
-                </ul>
-            }
-
+                @if (!string.IsNullOrEmpty(embedUrl))
+                {
+                    <div class="position-relative thumb-switch" data-type="video" style="cursor:pointer">
+                        <img src="@Model.ProductImageUrl"
+                             class="img-thumbnail"
+                             style="height:80px;width:80px;object-fit:cover;opacity:.7">
+                        <span class="position-absolute top-50 start-50 translate-middle bg-dark text-white px-2 rounded small">
+                            ▶
+                        </span>
+                    </div>
+                }
+            </div>
         </div>
+
+
+          @* Songs Dropdown (same as before) *@
+         @if (Model.tbl_Albums?.tbl_Songs?.Any() == true)
+          {
+        <div class="dropdown mt-3">
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button"
+                    id="songsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Songs
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="songsDropdown">
+                @foreach (var s in Model.tbl_Albums.tbl_Songs)
+                {
+                    <li class="dropdown-item">
+                        <div class="song-title">@s.Title</div>
+                        <audio controls class="w-100 mt-1">
+                            <source src="@s.FileUrl" type="audio/mp3" />
+                        </audio>
+                    </li>
+                }
+            </ul>
+        </div>
+          }
+
+     
 
         <!-- Product Info -->
         <div class="col-md-6">
@@ -241,7 +294,7 @@
             </div>
         </div>
     }
-</div>
+
 
 <style>
     .song-item {
@@ -314,3 +367,33 @@
             color: #ffc107;
         }
 </style>
+
+@section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const mainImage   = document.getElementById('mainImage');
+                const mainTrailer = document.getElementById('mainTrailer');
+
+                document.querySelectorAll('.thumb-switch').forEach(function (thumb) {
+                    thumb.addEventListener('click', function () {
+                        document.querySelectorAll('.thumb-switch').forEach(t => t.classList.remove('active-thumb'));
+                        this.classList.add('active-thumb');
+
+                        if (this.dataset.type === 'image') {
+                            mainImage.classList.remove('d-none');
+                            if (mainTrailer) mainTrailer.classList.add('d-none');
+                        } else {
+                            mainImage.classList.add('d-none');
+                            if (mainTrailer) mainTrailer.classList.remove('d-none');
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <style>
+            .active-thumb {
+                border: 2px solid #198754;
+            }
+        </style>
+}

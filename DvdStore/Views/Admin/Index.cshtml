@@ -9,30 +9,33 @@
     <!-- Top Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="card text-bg-primary p-3">
+            <div class="card text-bg-primary p-3 text-center">
                 <h6>Total Users</h6>
-                <h3>1,245</h3>
+                <h3>@ViewBag.TotalUsers</h3>
                 <i class="bi bi-people fs-2"></i>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card text-bg-success p-3">
+            <div class="card text-bg-success p-3 text-center">
                 <h6>Total Orders</h6>
-                <h3>523</h3>
+                <h3>@ViewBag.TotalOrders</h3>
                 <i class="bi bi-cart-check fs-2"></i>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card text-bg-warning p-3">
+            <div class="card text-bg-warning p-3 text-center">
                 <h6>Products</h6>
-                <h3>320</h3>
+                <h3>@ViewBag.TotalProducts</h3>
                 <i class="bi bi-box-seam fs-2"></i>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card text-bg-danger p-3">
+            <div class="card text-bg-danger p-3 text-center">
                 <h6>Feedbacks</h6>
-                <h3>89</h3>
+                <h3>@ViewBag.TotalFeedbacks</h3>
                 <i class="bi bi-chat-dots fs-2"></i>
             </div>
         </div>
@@ -44,36 +47,64 @@
         <div class="col-md-7">
             <div class="card p-3">
                 <h5 class="mb-3">Recent Orders</h5>
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>Product</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Ali</td>
-                            <td>Album A</td>
-                            <td><span class="badge bg-success">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Ayesha</td>
-                            <td>Album B</td>
-                            <td><span class="badge bg-warning">Pending</span></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Usman</td>
-                            <td>Album C</td>
-                            <td><span class="badge bg-danger">Cancelled</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+               @{
+    var recentOrders = ViewBag.RecentOrders as List<DvdStore.Models.Orders>;
+    int serial = 1;
+}
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Product(s)</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (recentOrders != null && recentOrders.Any())
+        {
+            foreach (var order in recentOrders)
+            {
+                <tr>
+                    <td>@serial</td>
+                    <td>@order.tbl_Users.Name</td>
+                    <td>
+                        @foreach (var item in order.tbl_OrderDetails)
+                        {
+                            <div>@item.tbl_Products.Titlle</div> <!-- Use tbl_Products, not tbl_Albums -->
+                        }
+                    </td>
+                    <td>
+                        @switch(order.Status)
+                        {
+                            case "Completed":
+                                <span class="badge bg-success">Completed</span>;
+                                break;
+                            case "Pending":
+                                <span class="badge bg-warning">Pending</span>;
+                                break;
+                            case "Cancelled":
+                                <span class="badge bg-danger">Cancelled</span>;
+                                break;
+                            default:
+                                <span class="badge bg-secondary">@order.Status</span>;
+                                break;
+                        }
+                    </td>
+                </tr>
+                serial++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No orders found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
             </div>
         </div>
 

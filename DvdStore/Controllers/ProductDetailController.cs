@@ -14,24 +14,24 @@ namespace DvdStore.Controllers
             _context = context;
         }
 
-        // In ProductDetailController.cs - Temporary fix
+        // GET: /ProductDetail/Index/{id}
         public async Task<IActionResult> Index(int id)
         {
+            // Load product with related data
             var product = await _context.tbl_Products
-     .Include(p => p.tbl_Albums!.tbl_Artists)
-     .Include(p => p.tbl_Albums!.tbl_Category)
-     .Include(p => p.tbl_Albums!.tbl_Songs)  // 🔑 Direct include of songs
-     .Include(p => p.tbl_Producers)
-     .Include(p => p.tbl_Suppliers)
-     .FirstOrDefaultAsync(p => p.ProductID == id && p.IsActive);
-
+                .Include(p => p.tbl_Albums!.tbl_Artists)
+                .Include(p => p.tbl_Albums!.tbl_Category)
+                .Include(p => p.tbl_Albums!.tbl_Songs) // Direct include of songs
+                .Include(p => p.tbl_Producers)
+                .Include(p => p.tbl_Suppliers)
+                .FirstOrDefaultAsync(p => p.ProductID == id && p.IsActive);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            // Load reviews separately (this will work even if table doesn't exist yet)
+            // ----- Load Reviews -----
             try
             {
                 var reviews = await _context.tbl_ProductReviews
@@ -41,7 +41,6 @@ namespace DvdStore.Controllers
 
                 ViewBag.Reviews = reviews;
 
-                // Calculate average rating
                 if (reviews.Any())
                 {
                     product.AverageRating = reviews.Average(r => r.Rating);
@@ -55,19 +54,20 @@ namespace DvdStore.Controllers
             }
             catch (Exception ex)
             {
-                // If table doesn't exist, set default values
+                // If reviews table doesn't exist
                 Console.WriteLine($"Reviews table not available: {ex.Message}");
                 product.AverageRating = 0;
                 product.ReviewCount = 0;
-                ViewBag.Reviews = new List<Models.ProductReviews>();
+                ViewBag.Reviews = new List<ProductReviews>();
             }
 
-            // Get related products
+            // ----- Related Products -----
             var relatedProducts = await _context.tbl_Products
                 .Include(p => p.tbl_Albums)
-                .Where(p => p.IsActive &&
-                           p.tbl_Albums.CategoryID == product.tbl_Albums.CategoryID &&
-                           p.ProductID != id)
+                .Where(p =>
+                    p.IsActive &&
+                    p.tbl_Albums.CategoryID == product.tbl_Albums.CategoryID &&
+                    p.ProductID != id)
                 .Take(4)
                 .ToListAsync();
 
@@ -86,7 +86,7 @@ namespace DvdStore.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var review = new Models.ProductReviews
+            var review = new ProductReviews
             {
                 ProductID = productId,
                 UserID = userId.Value,
@@ -101,13 +101,13 @@ namespace DvdStore.Controllers
             return RedirectToAction("Index", new { id = productId });
         }
 
-        // Helper method to check if user is admin (if needed)
+        // Helper: Check if current user is admin
         private bool IsAdminUser()
         {
             return HttpContext.Session.GetInt32("UserId") != null;
         }
 
-        // In ProductDetailController.cs - Add this method
+        // POST: Delete Review
         [HttpPost]
         public async Task<IActionResult> DeleteReview(int reviewId)
         {
@@ -121,11 +121,10 @@ namespace DvdStore.Controllers
             {
                 _context.tbl_ProductReviews.Remove(review);
                 await _context.SaveChangesAsync();
-
                 TempData["Success"] = "Review deleted successfully";
             }
 
-            return RedirectToAction("Index", new { id = review.ProductID });
+            return RedirectToAction("Index", new { id = review?.ProductID });
         }
     }
 }

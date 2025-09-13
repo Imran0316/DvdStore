@@ -1,5 +1,6 @@
 ﻿using DvdStore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DvdStore.Controllers
 {
@@ -12,13 +13,26 @@ namespace DvdStore.Controllers
         }
 
         // Dashboard
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // ✅ Ensure only admins can access
             if (HttpContext.Session.GetString("UserRole") != "Admin")
-            {
                 return RedirectToAction("Login", "Auth");
-            }
+
+            // Dashboard counts
+            ViewBag.TotalUsers = await db.tbl_Users.CountAsync();
+            ViewBag.TotalOrders = await db.tbl_Orders.CountAsync();
+            ViewBag.TotalProducts = await db.tbl_Products.CountAsync();
+            ViewBag.TotalFeedbacks = await db.tbl_Feedbacks.CountAsync();
+            // Recent Orders
+            var recentOrders = await db.tbl_Orders
+    .Include(o => o.tbl_Users) // User info
+    .Include(o => o.tbl_OrderDetails) // OrderDetails
+        .ThenInclude(od => od.tbl_Products) // Product info
+    .OrderByDescending(o => o.OrderDate)
+    .Take(5)
+    .ToListAsync();
+
+            ViewBag.RecentOrders = recentOrders;
             return View();
         }
 
