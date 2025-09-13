@@ -107,7 +107,7 @@
 
         /* Hero Section */
         .hero {
-            /* background: linear-gradient(rgba(11, 12, 42, 0.9), rgba(26, 27, 58, 0.9)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'); */
+            background: linear-gradient(rgba(11, 12, 42, 0.9), rgba(26, 27, 58, 0.9)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
             background-size: cover;
             background-position: center;
             padding: 100px 0;
@@ -339,7 +339,6 @@
             .product__item__pic {
                 height: 220px;
             }
-
         }
 
         /* Professional Navbar Styles */
@@ -545,6 +544,97 @@
         .star-label {
             cursor: pointer;
         }
+
+        /* Improved Navbar Styles */
+        .navbar-nav {
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+            .navbar-nav .nav-item {
+                white-space: nowrap;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.5rem 0.8rem !important;
+                font-size: 0.9rem;
+            }
+
+        /* Dropdown menu fixes */
+        .dropdown-menu {
+            background: var(--dark-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dropdown-item {
+            color: #ddd !important;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+            .dropdown-item:hover {
+                background: rgba(229, 54, 55, 0.2) !important;
+                color: var(--primary-color) !important;
+            }
+
+        /* FIXED: Media query with double @@ */
+        @@media (max-width: 992px) {
+            .navbar-collapse {
+                background: var(--dark-bg);
+                padding: 1rem;
+                border-radius: 0 0 8px 8px;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.8rem 0.5rem !important;
+            }
+
+            .dropdown-menu {
+                background: rgba(26, 27, 58, 0.95);
+                margin-left: 1rem;
+                border: none;
+            }
+        }
+
+        /* Cart badge styling */
+        .badge {
+            font-size: 0.7em;
+            padding: 0.3em 0.6em;
+        }
+
+        /* User dropdown arrow color */
+        .navbar-nav .dropdown-toggle::after {
+            color: var(--primary-color);
+            margin-left: 0.3rem;
+        }
+
+        /* Ensure proper spacing and prevent overflow */
+        .navbar {
+            min-height: 70px;
+        }
+
+        .navbar-nav {
+            max-width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .container-fluid {
+            padding-right: var(--bs-gutter-x, 0.75rem);
+            padding-left: var(--bs-gutter-x, 0.75rem);
+        }
+
+        /* Prevent text breaking */
+        .navbar-brand {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        /* Better dropdown positioning */
+        .dropdown-menu-end {
+            right: 0;
+            left: auto;
+        }
+
     </style>
 </head>
 <body>
@@ -554,16 +644,20 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
                 <div class="container-fluid">
+                    <!-- Logo -->
                     <a class="navbar-brand logo" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-play-circle me-2"></i>Entertainment<span>Hub</span>
                     </a>
 
+                    <!-- Mobile Toggle -->
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
+                    <!-- Navbar Items -->
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <!-- Left Side - Main Navigation -->
+                        <ul class="navbar-nav me-auto">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Home" asp-action="Index">
                                     <i class="fas fa-home me-1"></i> Home
@@ -574,7 +668,6 @@
                                     <i class="fas fa-shopping-bag me-1"></i> Products
                                 </a>
                             </li>
-                            
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="NewsPromotion" asp-action="News">
                                     <i class="fas fa-newspaper me-1"></i> News & Offers
@@ -594,54 +687,34 @@
                             </li>
                         </ul>
 
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Feedback" asp-action="Create">
-                                <i class="fas fa-envelope me-1"></i> Contact Us
-                            </a>
-                        </li>
-
+                        <!-- Right Side - User Actions -->
                         <ul class="navbar-nav ms-auto">
                             @if (Context.Session.GetInt32("UserId") != null)
                             {
-                                <li class="nav-item">
-                                    <span class="nav-link user-greeting">
+                                <!-- User Menu - Now as a dropdown to save space -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
                                         <i class="fas fa-user-circle me-1"></i>
-                                        Hello, @Context.Session.GetString("UserName")
-                                    </span>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link position-relative" asp-controller="Cart" asp-action="Index">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        <span class="cart-count">@(Context.Session.GetInt32("CartCount") ?? 0)</span>
+                                        @Context.Session.GetString("UserName")
                                     </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Orders" asp-action="OrderHistory"><i class="fas fa-history me-2"></i>Order History</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Feedback" asp-action="Create"><i class="fas fa-envelope me-2"></i>Contact Us</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Cart" asp-action="Index">
+                                                <i class="fas fa-shopping-cart me-2"></i>Cart
+                                                <span class="badge bg-primary ms-2">@(Context.Session.GetInt32("CartCount") ?? 0)</span>
+                                            </a>
+                                        </li>
+                                        <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                    </ul>
                                 </li>
-                         
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Auth" asp-action="Logout">
-                                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                                    </a>
-                                </li>
-
-
-
-         @*                        <!-- Temporary debug info -->
-                                <div style="position: fixed; top: 10px; right: 10px; background: #f8f9fa; padding: 10px; border: 1px solid #ddd; z-index: 1000;">
-                                    <small>DEBUG: UserID: @Context.Session.GetInt32("UserId")</small>
-                                </div> *@
-
-
-
-                                @if (Context.Session.GetInt32("UserId") != null)
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Profile" asp-action="Index">
-                                            <i class="fas fa-user me-1"></i> My Profile
-                                        </a>
-                                    </li>
-                                }
                             }
                             else
                             {
+                                <!-- Guest Menu -->
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Auth" asp-action="Login">
                                         <i class="fas fa-sign-in-alt me-1"></i> Login
@@ -659,7 +732,6 @@
             </nav>
         </div>
     </header>
-
     <!-- Main Content -->
     <main>
         @RenderBody()
@@ -749,7 +821,7 @@
     @RenderSection("Scripts", required: false)
 
     <script>
-    
+
             // Set active navigation link based on current page
             $(document).ready(function() {
                 var currentUrl = window.location.pathname.toLowerCase();
@@ -779,13 +851,13 @@
                     // Check if user is logged in
                     @if (Context.Session.GetInt32("UserId") == null)
                     {
-                            <text>
-                            showToast('Please login to add items to cart', 'error');
-                            setTimeout(function() {
-                                window.location.href = '@Url.Action("Login", "Auth")';
-                            }, 2000);
-                            return false;
-                            </text>
+                                    <text>
+                                    showToast('Please login to add items to cart', 'error');
+                                    setTimeout(function() {
+                                        window.location.href = '@Url.Action("Login", "Auth")';
+                                    }, 2000);
+                                    return false;
+                                    </text>
                     }
 
                     // Show loading animation
@@ -818,7 +890,7 @@
                             // Reset button
                             $button.html(originalText);
                             $button.prop('disabled', false);
-                        }   
+                        }
                     });
 
                     return false;
@@ -841,13 +913,13 @@
                     // Check if user is logged in
                     @if (Context.Session.GetInt32("UserId") == null)
                     {
-                            <text>
-                            showToast('Please login to add items to cart', 'error');
-                            setTimeout(function() {
-                                window.location.href = '@Url.Action("Login", "Auth")';
-                            }, 2000);
-                            return false;
-                            </text>
+                                    <text>
+                                    showToast('Please login to add items to cart', 'error');
+                                    setTimeout(function() {
+                                        window.location.href = '@Url.Action("Login", "Auth")';
+                                    }, 2000);
+                                    return false;
+                                    </text>
                     }
 
                     // Show loading animation
@@ -910,7 +982,7 @@
                 }
             });
 
-                    
+
 
 
 
@@ -982,7 +1054,7 @@
                 }
             });
         });
-    </script>
+    </script>a
 
 
 </body>

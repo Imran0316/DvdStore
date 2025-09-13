@@ -1,4 +1,4 @@
-﻿@*
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -70,10 +70,17 @@
                     <td>@serial</td>
                     <td>@order.tbl_Users.Name</td>
                     <td>
-                        @foreach (var item in order.tbl_OrderDetails)
-                        {
-                            <div>@item.tbl_Products.Titlle</div> <!-- Use tbl_Products, not tbl_Albums -->
-                        }
+                                        @foreach (var item in order.tbl_OrderDetails)
+                                        {
+                                            if (item.tbl_Products.tbl_Albums != null)
+                                            {
+                                                <div>@item.tbl_Products.tbl_Albums.Title</div>
+                                            }
+                                            else
+                                            {
+                                                <div>No Album Available</div>
+                                            }
+                                        }
                     </td>
                     <td>
                         @switch(order.Status)
