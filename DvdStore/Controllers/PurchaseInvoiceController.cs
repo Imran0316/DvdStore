@@ -1,4 +1,4 @@
-﻿﻿using DvdStore.Models;
+﻿using DvdStore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,294 +7,237 @@ namespace DvdStore.Controllers
     public class PurchaseInvoiceController : BaseAdminController
     {
         private readonly DvdDbContext _context;
+        public PurchaseInvoiceController(DvdDbContext context) { _context = context; }
 
-        public PurchaseInvoiceController(DvdDbContext context)
+        // Index - list
+        public async Task<IActionResult> Index()
         {
-            _context = context;
-        }
-
-        // GET: PurchaseInvoice
-        public IActionResult Index()
-        {
-            var invoices = _context.tbl_PurchaseInvoices
+            var invoices = await _context.tbl_PurchaseInvoices
                 .Include(p => p.tbl_Suppliers)
                 .Include(p => p.InvoiceDetails)
-                .ThenInclude(d => d.tbl_Products)
-                .ThenInclude(p => p.tbl_Albums)
+                    .ThenInclude(d => d.tbl_Products)
+                        .ThenInclude(p => p.tbl_Albums)
                 .OrderByDescending(p => p.InvoiceDate)
-                .ToList();
+                .ToListAsync();
 
             return View(invoices);
         }
 
-        // GET: PurchaseInvoice/Details/5
-        public IActionResult Details(int id)
+        // Details
+        public async Task<IActionResult> Details(int id)
         {
-            var invoice = _context.tbl_PurchaseInvoices
+            var invoice = await _context.tbl_PurchaseInvoices
                 .Include(p => p.tbl_Suppliers)
                 .Include(p => p.InvoiceDetails)
-                .ThenInclude(d => d.tbl_Products)
-                .ThenInclude(p => p.tbl_Albums)
-                .FirstOrDefault(p => p.PurchaseInvoiceID == id);
+                    .ThenInclude(d => d.tbl_Products)
+                        .ThenInclude(p => p.tbl_Albums)
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
 
-            if (invoice == null)
-            {
-                return NotFound();
-            }
-
+            if (invoice == null) return NotFound();
             return View(invoice);
         }
-
         // GET: PurchaseInvoice/Create
+        [HttpGet]                                  
         public IActionResult Create()
         {
             ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
             ViewBag.Products = _context.tbl_Products
-                .Include(p => p.tbl_Albums)
-                .Where(p => p.IsActive)
-                .ToList();
-
-            return View();
+                                        .Include(p => p.tbl_Albums)
+                                        .Where(p => p.IsActive)
+                                        .ToList();
+            return View(new PurchaseInvoice());
         }
 
-        // POST: PurchaseInvoice/Create
+        // GET Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(PurchaseInvoice invoice, List<int> productIds, List<int> quantities, List<decimal> unitCosts)
+        public async Task<IActionResult> Create(
+          PurchaseInvoice invoice,
+          List<int> ProductID,     
+          List<int> Quantity,
+          List<decimal> UnitCost)
         {
-            if (ModelState.IsValid && productIds != null && productIds.Count > 0)
+
+            if (!ModelState.IsValid || ProductID == null || ProductID.Count == 0)
             {
-                invoice.InvoiceDate = DateTime.Now;
-                invoice.InvoiceDetails = new List<PurchaseInvoiceDetail>();
+                TempData["Error"] = string.Join(" | ",
+                    ModelState.Values.SelectMany(v => v.Errors)
+                                     .Select(e => e.ErrorMessage));
+                ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
+                ViewBag.Products = _context.tbl_Products.Include(p => p.tbl_Albums)
+                                                         .Where(p => p.IsActive).ToList();
+                return View(invoice);
+            }
 
-                decimal totalAmount = 0;
 
-                for (int i = 0; i < productIds.Count; i++)
+            invoice.InvoiceDate = DateTime.Now;
+            invoice.InvoiceDetails = new List<PurchaseInvoiceDetail>();
+            decimal totalAmount = 0m;
+
+            for (int i = 0; i < ProductID.Count; i++)
+            {
+                var pid = ProductID[i];
+                var qty = Quantity.ElementAtOrDefault(i);
+                var cost = UnitCost.ElementAtOrDefault(i);
+
+                var product = await _context.tbl_Products.FindAsync(pid);
+                if (product == null) continue;
+
+                invoice.InvoiceDetails.Add(new PurchaseInvoiceDetail
                 {
-                    var product = _context.tbl_Products.Find(productIds[i]);
-                    if (product != null)
-                    {
-                        var detail = new PurchaseInvoiceDetail
-                        {
-                            ProductID = productIds[i],
-                            Quantity = quantities[i],
-                            UnitCost = unitCosts[i]
-                        };
+                    ProductID = pid,
+                    Quantity = qty,
+                    UnitCost = cost
+                });
 
-                        totalAmount += quantities[i] * unitCosts[i];
-                        invoice.InvoiceDetails.Add(detail);
-
-                        // Update product stock
-                        product.StockQuantity += quantities[i];
-                    }
-                }
-
-                invoice.TotalAmount = totalAmount;
-
-                _context.tbl_PurchaseInvoices.Add(invoice);
-                _context.SaveChanges();
-
-                TempData["Success"] = "Purchase invoice created successfully!";
-                return RedirectToAction("Index");
+                product.StockQuantity += qty;
+                totalAmount += qty * cost;
             }
 
-            ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
-            ViewBag.Products = _context.tbl_Products
-                .Include(p => p.tbl_Albums)
-                .Where(p => p.IsActive)
-                .ToList();
+            invoice.TotalAmount = totalAmount;
+            _context.tbl_PurchaseInvoices.Add(invoice);
+            await _context.SaveChangesAsync();
 
-            return View(invoice);
+            TempData["Success"] = "Purchase invoice created successfully!";
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: PurchaseInvoice/Edit/5
-        public IActionResult Edit(int id)
+
+        // GET Edit
+        public async Task<IActionResult> Edit(int id)
         {
-            var invoice = _context.tbl_PurchaseInvoices
-                .Include(p => p.tbl_Suppliers)
+            var invoice = await _context.tbl_PurchaseInvoices
                 .Include(p => p.InvoiceDetails)
-                .ThenInclude(d => d.tbl_Products)
-                .ThenInclude(p => p.tbl_Albums)
-                .FirstOrDefault(p => p.PurchaseInvoiceID == id);
+                    .ThenInclude(d => d.tbl_Products)
+                        .ThenInclude(p => p.tbl_Albums)
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
 
-            if (invoice == null)
-            {
-                return NotFound();
-            }
+            if (invoice == null) return NotFound();
 
             ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
-            ViewBag.Products = _context.tbl_Products
-                .Include(p => p.tbl_Albums)
-                .Where(p => p.IsActive)
-                .ToList();
+            ViewBag.Products = _context.tbl_Products.Include(p => p.tbl_Albums).Where(p => p.IsActive).ToList();
 
             return View(invoice);
         }
 
-        // POST: PurchaseInvoice/Edit/5
+        // POST Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, PurchaseInvoice invoice, List<int> productIds, List<int> quantities, List<decimal> unitCosts)
+        public async Task<IActionResult> Edit(int id, PurchaseInvoice invoice, List<int> productIds, List<int> quantities, List<decimal> unitCosts)
         {
-            if (id != invoice.PurchaseInvoiceID)
+            if (id != invoice.PurchaseInvoiceID) return NotFound();
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
+                ViewBag.Products = _context.tbl_Products.Include(p => p.tbl_Albums).Where(p => p.IsActive).ToList();
+                return View(invoice);
             }
 
-            if (ModelState.IsValid)
+            var existing = await _context.tbl_PurchaseInvoices
+                .Include(p => p.InvoiceDetails)
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
+
+            if (existing == null) return NotFound();
+
+            // revert stock for old details
+            foreach (var d in existing.InvoiceDetails.ToList())
             {
-                try
-                {
-                    var existingInvoice = _context.tbl_PurchaseInvoices
-                        .Include(p => p.InvoiceDetails)
-                        .FirstOrDefault(p => p.PurchaseInvoiceID == id);
-
-                    if (existingInvoice == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // Remove old details and revert stock
-                    foreach (var detail in existingInvoice.InvoiceDetails.ToList())
-                    {
-                        var product = _context.tbl_Products.Find(detail.ProductID);
-                        if (product != null)
-                        {
-                            product.StockQuantity -= detail.Quantity;
-                        }
-                        _context.tbl_PurchaseInvoiceDetails.Remove(detail);
-                    }
-
-                    // Add new details
-                    existingInvoice.InvoiceDetails = new List<PurchaseInvoiceDetail>();
-                    decimal totalAmount = 0;
-
-                    for (int i = 0; i < productIds.Count; i++)
-                    {
-                        var product = _context.tbl_Products.Find(productIds[i]);
-                        if (product != null)
-                        {
-                            var detail = new PurchaseInvoiceDetail
-                            {
-                                ProductID = productIds[i],
-                                Quantity = quantities[i],
-                                UnitCost = unitCosts[i],
-                                PurchaseInvoiceID = id
-                            };
-
-                            totalAmount += quantities[i] * unitCosts[i];
-                            existingInvoice.InvoiceDetails.Add(detail);
-
-                            // Update product stock
-                            product.StockQuantity += quantities[i];
-                        }
-                    }
-
-                    existingInvoice.SupplierID = invoice.SupplierID;
-                    existingInvoice.InvoiceDate = invoice.InvoiceDate;
-                    existingInvoice.TotalAmount = totalAmount;
-                    existingInvoice.Notes = invoice.Notes;
-
-                    _context.Update(existingInvoice);
-                    _context.SaveChanges();
-
-                    TempData["Success"] = "Purchase invoice updated successfully!";
-                    return RedirectToAction("Index");
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PurchaseInvoiceExists(id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                var prod = await _context.tbl_Products.FindAsync(d.ProductID);
+                if (prod != null) prod.StockQuantity -= d.Quantity;
+                _context.tbl_PurchaseInvoiceDetails.Remove(d);
             }
 
-            ViewBag.Suppliers = _context.tbl_Suppliers.ToList();
-            ViewBag.Products = _context.tbl_Products
-                .Include(p => p.tbl_Albums)
-                .Where(p => p.IsActive)
-                .ToList();
+            // add new details and update stock
+            existing.InvoiceDetails = new List<PurchaseInvoiceDetail>();
+            decimal total = 0m;
+            for (int i = 0; i < productIds.Count; i++)
+            {
+                var pid = productIds[i];
+                var qty = quantities.ElementAtOrDefault(i);
+                var cost = unitCosts.ElementAtOrDefault(i);
 
-            return View(invoice);
+                var prod = await _context.tbl_Products.FindAsync(pid);
+                if (prod == null) continue;
+
+                var d = new PurchaseInvoiceDetail
+                {
+                    ProductID = pid,
+                    Quantity = qty,
+                    UnitCost = cost,
+                    PurchaseInvoiceID = id
+                };
+                existing.InvoiceDetails.Add(d);
+                total += qty * cost;
+                prod.StockQuantity += qty;
+            }
+
+            existing.SupplierID = invoice.SupplierID;
+            existing.InvoiceDate = invoice.InvoiceDate;
+            existing.TotalAmount = total;
+            existing.Notes = invoice.Notes;
+
+            _context.tbl_PurchaseInvoices.Update(existing);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Purchase invoice updated successfully!";
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: PurchaseInvoice/Delete/5
-        public IActionResult Delete(int id)
+        // GET Delete
+        public async Task<IActionResult> Delete(int id)
         {
-            var invoice = _context.tbl_PurchaseInvoices
+            var invoice = await _context.tbl_PurchaseInvoices
                 .Include(p => p.tbl_Suppliers)
                 .Include(p => p.InvoiceDetails)
-                .ThenInclude(d => d.tbl_Products)
-                .ThenInclude(p => p.tbl_Albums)
-                .FirstOrDefault(p => p.PurchaseInvoiceID == id);
+                    .ThenInclude(d => d.tbl_Products)
+                        .ThenInclude(p => p.tbl_Albums)
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
 
-            if (invoice == null)
-            {
-                return NotFound();
-            }
-
+            if (invoice == null) return NotFound();
             return View(invoice);
         }
 
-        // POST: PurchaseInvoice/Delete/5
+        // POST DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var invoice = _context.tbl_PurchaseInvoices
+            var invoice = await _context.tbl_PurchaseInvoices
                 .Include(p => p.InvoiceDetails)
-                .FirstOrDefault(p => p.PurchaseInvoiceID == id);
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
 
             if (invoice != null)
             {
-                // Revert stock changes
-                foreach (var detail in invoice.InvoiceDetails)
+                // revert stock
+                foreach (var d in invoice.InvoiceDetails)
                 {
-                    var product = _context.tbl_Products.Find(detail.ProductID);
-                    if (product != null)
-                    {
-                        product.StockQuantity -= detail.Quantity;
-                    }
+                    var prod = await _context.tbl_Products.FindAsync(d.ProductID);
+                    if (prod != null) prod.StockQuantity -= d.Quantity;
                 }
 
                 _context.tbl_PurchaseInvoices.Remove(invoice);
-                _context.SaveChanges();
-
+                await _context.SaveChangesAsync();
                 TempData["Success"] = "Purchase invoice deleted successfully!";
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: PurchaseInvoice/Print/5
-        public IActionResult Print(int id)
+        // Print view
+        public async Task<IActionResult> Print(int id)
         {
-            var invoice = _context.tbl_PurchaseInvoices
+            var invoice = await _context.tbl_PurchaseInvoices
                 .Include(p => p.tbl_Suppliers)
                 .Include(p => p.InvoiceDetails)
-                .ThenInclude(d => d.tbl_Products)
-                .ThenInclude(p => p.tbl_Albums)
-                .FirstOrDefault(p => p.PurchaseInvoiceID == id);
+                    .ThenInclude(d => d.tbl_Products)
+                        .ThenInclude(p => p.tbl_Albums)
+                .FirstOrDefaultAsync(p => p.PurchaseInvoiceID == id);
 
-            if (invoice == null)
-            {
-                return NotFound();
-            }
-
+            if (invoice == null) return NotFound();
             return View(invoice);
         }
 
-        private bool PurchaseInvoiceExists(int id)
-        {
-            return _context.tbl_PurchaseInvoices.Any(e => e.PurchaseInvoiceID == id);
-        }
-
-        // AJAX: Get product details
+        // AJAX product details
         [HttpGet]
         public IActionResult GetProductDetails(int productId)
         {
@@ -302,11 +245,7 @@ namespace DvdStore.Controllers
                 .Include(p => p.tbl_Albums)
                 .FirstOrDefault(p => p.ProductID == productId);
 
-            if (product == null)
-            {
-                return Json(new { success = false });
-            }
-
+            if (product == null) return Json(new { success = false });
             return Json(new
             {
                 success = true,

@@ -1,0 +1,99 @@
+﻿@model DvdStore.Models.PurchaseInvoice
+@{
+    Layout = null;  // Print friendly page without dashboard layout
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Purchase Invoice #@Model.PurchaseInvoiceID</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .invoice-header {
+            margin-bottom: 20px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        @@media print {
+            .no-print
+
+        {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-header text-center">
+        <h2>Purchase Invoice</h2>
+        <h5>Invoice #@Model.PurchaseInvoiceID</h5>
+        <p>Date: @Model.InvoiceDate.ToString("dd MMM yyyy")</p>
+    </div>
+
+    <div class="mb-4">
+        <h6>Supplier Information</h6>
+        <p>
+            <strong>@Model.tbl_Suppliers?.SupplierName</strong><br />
+            Phone: @Model.tbl_Suppliers?.ContactInfo
+        </p>
+    </div>
+
+    <div class="mb-4">
+        <h6>Notes</h6>
+        <p>@Model.Notes</p>
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th class="text-end">Quantity</th>
+                <th class="text-end">Unit Cost</th>
+                <th class="text-end">Line Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+                decimal grandTotal = 0;
+            }
+            @foreach (var item in Model.InvoiceDetails)
+            {
+                var lineTotal = item.Quantity * item.UnitCost;
+                grandTotal += lineTotal;
+                <tr>
+                    <td>@i</td>
+                    <td>@item.tbl_Products?.tbl_Albums?.Title</td>
+                    <td class="text-end">@item.Quantity</td>
+                    <td class="text-end">@item.UnitCost.ToString("N2")</td>
+                    <td class="text-end">@lineTotal.ToString("N2")</td>
+                </tr>
+                i++;
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4" class="text-end">Total Amount</th>
+                <th class="text-end">@grandTotal.ToString("N2")</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="no-print mt-4 text-center">
+        <button onclick="window.print()" class="btn btn-primary">Print</button>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+
+</body>
+</html>

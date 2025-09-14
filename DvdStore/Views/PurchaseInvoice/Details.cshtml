@@ -1,0 +1,30 @@
+﻿@model DvdStore.Models.PurchaseInvoice
+@{
+    Layout = "Dashboard"; ViewData["Title"] = "Invoice Details";
+}
+
+<h2>Invoice #@Model.PurchaseInvoiceID</h2>
+<p>Supplier: @Model.tbl_Suppliers?.SupplierName</p>
+<p>Date: @Model.InvoiceDate.ToString("yyyy-MM-dd")</p>
+<p>Notes: @Model.Notes</p>
+
+<table class="table">
+    <thead><tr><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Line Total</th></tr></thead>
+    <tbody>
+        @foreach (var d in Model.InvoiceDetails)
+        {
+            <tr>
+                <td>@d.tbl_Products?.tbl_Albums?.Title</td>
+                <td>@d.Quantity</td>
+                <td>@d.UnitCost.ToString("N2")</td>
+                <td>@(d.Quantity* d.UnitCost).ToString("N2")</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr><th colspan="3">Total</th><th>@Model.TotalAmount?.ToString("N2")</th></tr>
+    </tfoot>
+</table>
+
+<a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+<a asp-action="Print" asp-route-id="@Model.PurchaseInvoiceID" class="btn btn-secondary">Print</a>

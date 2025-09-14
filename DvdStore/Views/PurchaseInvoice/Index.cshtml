@@ -1,0 +1,42 @@
+﻿@model IEnumerable<DvdStore.Models.PurchaseInvoice>
+@{
+    Layout = "Dashboard"; ViewData["Title"] = "Purchase Invoices";
+}
+
+<h2>Purchase Invoices</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Supplier</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var inv in Model)
+        {
+            <tr>
+                <td>@inv.PurchaseInvoiceID</td>
+                <td>@inv.tbl_Suppliers?.SupplierName</td>
+                <td>@inv.InvoiceDate.ToString("yyyy-MM-dd")</td>
+                <td>@inv.TotalAmount?.ToString("N2")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@inv.PurchaseInvoiceID" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@inv.PurchaseInvoiceID" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@inv.PurchaseInvoiceID" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Print" asp-route-id="@inv.PurchaseInvoiceID" class="btn btn-sm btn-secondary">Print</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Create New Invoice</a>

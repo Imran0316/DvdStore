@@ -293,6 +293,9 @@
                 <a class="nav-link @(ctrl == "reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
                     <i class="fa fa-chart-line"></i><span class="nav-text"> Reports</span>
                 </a>
+                <a class="nav-link @(ctrl == "Invoices" ? "active" : "")" asp-controller="PurchaseInvoice" asp-action="Index">
+                    <i class="fa fa-chart-line"></i><span class="nav-text"> Invoices</span>
+                </a>
 
                 <a class="nav-link @(ctrl == "Users" ? "active" : "")" asp-controller="Admin" asp-action="Users">
                     <i class="fa fa-chart-line"></i><span class="nav-text"> Users</span>
