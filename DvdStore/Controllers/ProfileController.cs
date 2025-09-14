@@ -152,5 +152,36 @@ namespace DvdStore.Controllers
 
             return View(order);
         }
+
+        // POST: Profile/CancelOrder/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var order = await _context.tbl_Orders
+                .FirstOrDefaultAsync(o => o.OrderID == id && o.UserID == userId);
+
+            if (order == null)
+                return NotFound();
+
+            // Only allow cancel if not completed or shipped
+            if (order.Status == "Pending" || order.Status == "Processing")
+            {
+                order.Status = "Cancelled";
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"Order #{order.OrderID} has been cancelled.";
+            }
+            else
+            {
+                TempData["Error"] = "This order can no longer be cancelled.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

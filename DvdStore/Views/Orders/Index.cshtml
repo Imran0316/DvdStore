@@ -1,8 +1,13 @@
 ﻿@model IEnumerable<DvdStore.Models.Orders>
 @{
+    var statuses = new[] { "Pending", "Processing", "Shipped", "Completed", "Cancelled" };
     ViewData["Title"] = "Orders Management";
     Layout = "Dashboard";
+
 }
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
 
 <h2>Orders Management</h2>
 
@@ -26,16 +31,23 @@
                 <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
                 <td>$@order.TotalAmount.ToString("N2")</td>
                 <td>
-                    <span class="badge bg-@(order.Status == "Completed" ? "success" :
-                                                                    order.Status == "Processing" ? "warning" :
-                                                                    order.Status == "Shipped" ? "info" : "secondary")">
-                    @order.Status
-                </span>
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@order.OrderID" class="btn btn-sm btn-info">View Details</a>
-            </td>
-        </tr>
-                }
+                    <form asp-action="UpdateStatus" method="post" class="d-flex">
+                        <input type="hidden" name="id" value="@order.OrderID" />
+                        <select name="Status" class="form-select form-select-sm me-2">
+                            @foreach (var s in statuses)
+                            {
+                                <option value="@s" @(order.Status == s ? "selected" : "")>@s</option>
+                            }
+                        </select>
+
+                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    </form>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.OrderID"
+                       class="btn btn-sm btn-info">View Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
