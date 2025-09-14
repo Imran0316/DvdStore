@@ -59,5 +59,7 @@ namespace DvdStore.Models
 
         [NotMapped]
         public int ReviewCount { get; set; }
+        //[StringLength(500)]
+        //public string? SampleFileUrl { get; set; }
     }
 }

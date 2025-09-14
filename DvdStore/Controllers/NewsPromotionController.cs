@@ -345,11 +345,37 @@ namespace DvdStore.Controllers
         {
             Console.WriteLine("=== NEWS METHOD CALLED ===");
 
+            // TEMPORARY: Remove date filters for testing
             var query = _context.tbl_NewsPromotions
                 .Include(n => n.Product)
                 .ThenInclude(p => p.tbl_Albums)
-                .Where(n => n.IsActive && n.PublishDate <= DateTime.Now &&
-                           (n.ExpiryDate == null || n.ExpiryDate >= DateTime.Now));
+                .Where(n => n.IsActive); // Remove date filters temporarily
+
+
+
+
+            var newsItems = await query.OrderByDescending(n => n.PublishDate).ToListAsync();
+
+            // DEBUG: Log each item's status
+            Console.WriteLine($"=== NEWS ITEMS DEBUG ===");
+            foreach (var item in newsItems)  // ← Use different variable name
+            {
+                var isActive = item.IsActive;
+                var isPublished = item.PublishDate <= DateTime.Now;
+                var isNotExpired = item.ExpiryDate == null || item.ExpiryDate >= DateTime.Now;
+                var shouldShow = isActive && isPublished && isNotExpired;
+
+                Console.WriteLine($"Item: {item.Title}");
+                Console.WriteLine($"  Active: {isActive}, Published: {isPublished}, Not Expired: {isNotExpired}");
+                Console.WriteLine($"  PublishDate: {item.PublishDate}, ExpiryDate: {item.ExpiryDate}");
+                Console.WriteLine($"  Should Show: {shouldShow}");
+                Console.WriteLine("---");
+            }
+
+            return View(newsItems);  // ← Return the correct variable
+
+
+
 
             // Filter by type if specified
             if (!string.IsNullOrEmpty(type))

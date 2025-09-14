@@ -1,0 +1,144 @@
+﻿@model IEnumerable<DvdStore.Models.Wishlist>
+@{
+    ViewData["Title"] = "My Wishlist";
+    Layout = "_Layout1";
+}
+
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="hero__text">
+                    <h2>My Wishlist</h2>
+                    <p>Your favorite items saved for later</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="product spad">
+    <div class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <div class="alert alert-info">@TempData["Info"]</div>
+        }
+
+        <div class="row">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="product__item">
+                            <a href="@Url.Action("Index", "ProductDetail", new { id = item.ProductID })"
+                               style="text-decoration: none; color: inherit;">
+                                <div class="product__item__pic set-bg"
+                                     style="background-image: url('@Url.Content(item.Product.ProductImageUrl)');">
+                                    <div class="ep">$@item.Product.Price</div>
+                                </div>
+                                <div class="product__item__text">
+                                    <h5>@item.Product.tbl_Albums?.Title</h5>
+                                    <ul>
+                                        <li>By: @item.Product.tbl_Producers?.ProducerName</li>
+                                        <li>Stock: @item.Product.StockQuantity</li>
+                                    </ul>
+                                    <div class="product__price">$@item.Product.Price</div>
+                                </div>
+                            </a>
+
+                            <div class="wishlist-actions mt-3">
+                                <form asp-action="MoveToCart" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.WishlistID" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+
+                                <form asp-action="RemoveFromWishlist" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.WishlistID" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Remove from wishlist?')">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                    <h4>Your wishlist is empty</h4>
+                    <p class="text-muted">Start adding items you love!</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Continue Shopping
+                    </a>
+                </div>
+            }
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <form asp-action="ClearWishlist" method="post"
+                          onsubmit="return confirm('Clear your entire wishlist? This cannot be undone.')">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fas fa-trash"></i> Clear Entire Wishlist
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    .wishlist-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .product__item {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .product__item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+    .set-bg {
+        height: 250px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .ep {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #e53637;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+</style>

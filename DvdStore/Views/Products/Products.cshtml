@@ -62,9 +62,12 @@
             <label>Product Image</label>
             <input type="file" name="ProductImage" class="form-control" />
         </div>
+        <!-- Replace the current Trailer URL input with this -->
         <div class="col-md-3 mt-2">
             <label>Product Trailer</label>
-            <input  name="TrailerUrl" class="form-control" />
+            <input type="file" name="TrailerFile" class="form-control" accept="video/*" />
+            <small class="text-muted">Or enter YouTube URL:</small>
+            <input type="text" name="TrailerUrl" class="form-control mt-1" placeholder="YouTube URL" />
         </div>
 
         <div class="col-md-3 mt-2">

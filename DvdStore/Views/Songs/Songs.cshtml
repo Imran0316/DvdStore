@@ -42,7 +42,9 @@
             <th>Duration</th>
             <th>Album</th>
             <th>File</th>
+            <th>Download</th> <!-- ADD THIS -->
             <th style="width:150px;">Actions</th>
+
         </tr>
     </thead>
     <tbody>
@@ -60,6 +62,14 @@
                         @if (!string.IsNullOrEmpty(s.FileUrl))
                         {
                             <audio controls src="@s.FileUrl" style="max-width:350px;"></audio>
+                        }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(s.FileUrl))
+                        {
+                            <a href="@s.FileUrl" download class="btn btn-sm btn-success">
+                                <i class="fas fa-download"></i> Download
+                            </a>
                         }
                     </td>
                     <td>

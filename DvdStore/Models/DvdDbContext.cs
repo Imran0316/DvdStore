@@ -28,6 +28,7 @@ namespace DvdStore.Models
         public DbSet<NewsPromotion> tbl_NewsPromotions { get; set; }
         public DbSet<Wishlist> tbl_Wishlists { get; set; }
         public DbSet<Feedback> tbl_Feedbacks { get; set; }
+        public DbSet<DownloadHistory> tbl_Downloads { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure the relationship between Product and ProductReview

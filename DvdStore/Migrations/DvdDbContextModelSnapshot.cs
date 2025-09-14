@@ -155,6 +155,42 @@ namespace DvdStore.Migrations
                     b.ToTable("tbl_Category");
                 });
 
+            modelBuilder.Entity("DvdStore.Models.DownloadHistory", b =>
+                {
+                    b.Property<int>("DownloadID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DownloadID"));
+
+                    b.Property<DateTime>("DownloadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SongID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("DownloadID");
+
+                    b.HasIndex("ProductID");
+
+                    b.HasIndex("SongID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("tbl_Downloads");
+                });
+
             modelBuilder.Entity("DvdStore.Models.Feedback", b =>
                 {
                     b.Property<int>("FeedbackID")
@@ -718,6 +754,29 @@ namespace DvdStore.Migrations
                     b.Navigation("tbl_Products");
                 });
 
+            modelBuilder.Entity("DvdStore.Models.DownloadHistory", b =>
+                {
+                    b.HasOne("DvdStore.Models.Products", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID");
+
+                    b.HasOne("DvdStore.Models.Songs", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongID");
+
+                    b.HasOne("DvdStore.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Song");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DvdStore.Models.Feedback", b =>
                 {
                     b.HasOne("DvdStore.Models.Users", "User")
@@ -858,7 +917,7 @@ namespace DvdStore.Migrations
             modelBuilder.Entity("DvdStore.Models.Songs", b =>
                 {
                     b.HasOne("DvdStore.Models.Albums", "Album")
-                        .WithMany()
+                        .WithMany("tbl_Songs")
                         .HasForeignKey("AlbumID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -883,6 +942,11 @@ namespace DvdStore.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DvdStore.Models.Albums", b =>
+                {
+                    b.Navigation("tbl_Songs");
                 });
 
             modelBuilder.Entity("DvdStore.Models.Cart", b =>

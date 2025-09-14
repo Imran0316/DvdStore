@@ -1,0 +1,24 @@
+﻿@using Microsoft.EntityFrameworkCore
+@inject DvdStore.Models.DvdDbContext _context
+
+@{
+    var userId = Context.Session.GetInt32("UserId");
+    var wishlistCount = 0;
+
+    if (userId != null)
+    {
+        wishlistCount = _context.tbl_Wishlists
+            .Count(w => w.UserID == userId);
+    }
+}
+
+<li class="nav-item">
+    <a class="nav-link" href="@Url.Action("Index", "Wishlist")">
+        <i class="fas fa-heart"></i>
+        Wishlist
+        @if (wishlistCount > 0)
+        {
+            <span class="badge bg-danger">@wishlistCount</span>
+        }
+    </a>
+</li>

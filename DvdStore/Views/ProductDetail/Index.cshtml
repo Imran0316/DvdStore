@@ -16,23 +16,32 @@
                      class="img-fluid rounded w-100"
                      style="max-height:500px;object-fit:cover;">
 
-                @* Hidden trailer iframe – shown only when user clicks *@
+                @* Hidden trailer iframe *@
                 @{
                     string embedUrl = null;
+                    bool hasLocalTrailer = false;
                     if (!string.IsNullOrEmpty(Model.TrailerUrl))
                     {
                         var raw = Model.TrailerUrl.Trim();
 
-                        // convert to embed format
-                        if (raw.Contains("youtu.be/"))
+                        // Check if it's a local file (not YouTube URL)
+                        if (!raw.StartsWith("http") && !raw.StartsWith("www.") && !raw.Contains("youtube") && !raw.Contains("youtu.be"))
                         {
-                            var id = raw.Split("youtu.be/")[1].Split('?')[0];
-                            embedUrl = $"https://www.youtube.com/embed/{id}";
+                            hasLocalTrailer = true;
                         }
-                        else if (raw.Contains("watch?v="))
+                        else
                         {
-                            var id = raw.Split("watch?v=")[1].Split('&')[0];
-                            embedUrl = $"https://www.youtube.com/embed/{id}";
+                            // convert to embed format for YouTube
+                            if (raw.Contains("youtu.be/"))
+                            {
+                                var id = raw.Split("youtu.be/")[1].Split('?')[0];
+                                embedUrl = $"https://www.youtube.com/embed/{id}";
+                            }
+                            else if (raw.Contains("watch?v="))
+                            {
+                                var id = raw.Split("watch?v=")[1].Split('&')[0];
+                                embedUrl = $"https://www.youtube.com/embed/{id}";
+                            }
                         }
                     }
                 }
@@ -48,7 +57,7 @@
                 }
             </div>
 
-            <!-- Thumbnails: image + trailer switcher -->
+            <!-- Thumbnails -->
             <div class="d-flex gap-2">
                 <img src="@Model.ProductImageUrl"
                      class="img-thumbnail thumb-switch active-thumb"
@@ -67,32 +76,38 @@
                     </div>
                 }
             </div>
+
+            <!-- Songs Dropdown -->
+            @if (Model.tbl_Albums?.tbl_Songs?.Any() == true)
+            {
+                <div class="dropdown mt-3">
+                    <button class="btn btn-secondary dropdown-toggle w-100" type="button"
+                            id="songsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Songs (@Model.tbl_Albums.tbl_Songs.Count)
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="songsDropdown">
+                        @foreach (var s in Model.tbl_Albums.tbl_Songs)
+                        {
+                            <li class="dropdown-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="song-title">@s.Title</span>
+                                    <div>
+                                        <a href="@Url.Action("StreamAudio", "Media", new { id = s.SongID })"
+                                           target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                        <a href="@Url.Action("DownloadSong", "Media", new { id = s.SongID })"
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
         </div>
-
-
-          @* Songs Dropdown (same as before) *@
-         @if (Model.tbl_Albums?.tbl_Songs?.Any() == true)
-          {
-        <div class="dropdown mt-3">
-            <button class="btn btn-secondary dropdown-toggle w-100" type="button"
-                    id="songsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Songs
-            </button>
-            <ul class="dropdown-menu w-100" aria-labelledby="songsDropdown">
-                @foreach (var s in Model.tbl_Albums.tbl_Songs)
-                {
-                    <li class="dropdown-item">
-                        <div class="song-title">@s.Title</div>
-                        <audio controls class="w-100 mt-1">
-                            <source src="@s.FileUrl" type="audio/mp3" />
-                        </audio>
-                    </li>
-                }
-            </ul>
-        </div>
-          }
-
-     
 
         <!-- Product Info -->
         <div class="col-md-6">
@@ -124,16 +139,70 @@
                 }
             </div>
 
-            <!-- Add to Cart -->
-            @if (Model.StockQuantity > 0)
+            <!-- Action Buttons -->
+            <div class="action-buttons mb-4">
+                @if (Model.StockQuantity > 0)
+                {
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline-block me-2">
+                        <input type="hidden" name="productId" value="@Model.ProductID" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </form>
+                }
+
+                <!-- Wishlist Button -->
+                @if (Context.Session.GetInt32("UserId") != null)
+                {
+                    <form asp-controller="Wishlist" asp-action="AddToWishlist" method="post" class="d-inline-block">
+                        <input type="hidden" name="productId" value="@Model.ProductID" />
+                        <button type="submit" class="btn btn-outline-danger btn-lg">
+                            <i class="fas fa-heart"></i> Add to Wishlist
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-danger btn-lg">
+                        <i class="fas fa-heart"></i> Login to Wishlist
+                    </a>
+                }
+            </div>
+
+            <!-- Media Downloads - ONLY SHOW FOR RELEVANT PRODUCT TYPES -->
+            @{
+                var categoryName = Model.tbl_Albums?.tbl_Category?.CategoryName ?? "";
+                bool isMovie = categoryName.Contains("Movie", StringComparison.OrdinalIgnoreCase);
+                bool isGame = categoryName.Contains("Game", StringComparison.OrdinalIgnoreCase);
+                bool isMusic = categoryName.Contains("Music", StringComparison.OrdinalIgnoreCase);
+            }
+
+            @if (isMovie || isGame || hasLocalTrailer)
             {
-                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mb-4">
-                    <input type="hidden" name="productId" value="@Model.ProductID" />
-                    <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </form>
+                <div class="media-downloads mb-4">
+                    <h5>Media</h5>
+                    <div class="btn-group" role="group">
+                        <!-- Download Trailer - Only for movies/games with local trailers -->
+                        @if (hasLocalTrailer && (isMovie || isGame))
+                        {
+                            <a href="@Url.Action("DownloadTrailer", "Media", new { productId = Model.ProductID })"
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Download Trailer
+                            </a>
+                        }
+
+                        <!-- Watch Trailer - Only for YouTube trailers -->
+                        @if (!string.IsNullOrEmpty(embedUrl))
+                        {
+                            <button type="button" class="btn btn-outline-danger"
+                                    onclick="document.getElementById('mainTrailer').classList.toggle('d-none');
+                                                     document.getElementById('mainImage').classList.toggle('d-none');">
+                                <i class="fas fa-play"></i> Watch Trailer
+                            </button>
+                        }
+                    </div>
+                </div>
             }
 
             <!-- Product Details -->
@@ -143,7 +212,7 @@
 
                 <div class="row">
                     <div class="col-6">
-                        <strong>Category:</strong> @Model.tbl_Albums?.tbl_Category?.CategoryName
+                        <strong>Category:</strong> @categoryName
                     </div>
                     <div class="col-6">
                         <strong>Release Date:</strong> @Model.tbl_Albums?.ReleaseDate?.ToString("yyyy")
@@ -158,6 +227,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Reviews Section -->
     <div class="row mt-5">
@@ -296,82 +366,56 @@
     }
 
 
-<style>
-    .song-item {
-        display: flex;
-        justify-content: space-between; /* Title aur audio player ko alag alag end pe rakhega */
-        align-items: center; /* Vertically center karega */
-        padding: 10px 15px; /* Thodi space add karega */
-        border-bottom: 1px solid #eee; /* Items ke beech line */
-    }
-
-        .song-item:last-child {
-            border-bottom: none; /* Last item se line hata dega */
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-    .song-title {
-        flex-grow: 1; /* Title ko zyada space dega */
-        margin-right: 15px; /* Title aur audio ke beech space */
-        font-weight: bold;
-        white-space: nowrap; /* Title ko ek line mein rakhega */
-        overflow: hidden; /* Agar title bada ho to hide karega */
-        text-overflow: ellipsis; /* ... show karega */
-    }
-
-    .song-audio {
-        /* Audio player ko chota karne ke liye */
-        width: 300px; /* Ya koi aur value jo aap chahen */
-        height: 30px; /* Height adjust kar sakte hain */
-    }
-
-    /* Jab screen choti ho (mobile devices) */
-    @@media (max-width: 768px) {
-        .song-item
-
-    {
-        flex-direction: column; /* Items ko column mein rakhega */
-        align-items: flex-start; /* Left align karega */
-    }
-
-    .song-title {
-        margin-bottom: 10px; /* Title aur audio ke beech space */
-    }
-
-    .song-audio {
-        width: 100%; /* Audio player ko poori width dega */
-    }
-
-    }
-    .rating-input {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-    }
-
-        .rating-input input {
-            display: none;
+        .song-title {
+            flex-grow: 1;
+            margin-right: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .rating-input label {
-            cursor: pointer;
-            font-size: 2rem;
-            color: #ddd;
-            transition: color 0.2s;
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
         }
 
-        .rating-input input:checked ~ label {
-            color: #ffc107;
-        }
+            .rating-input input {
+                display: none;
+            }
 
-        .rating-input label:hover, .rating-input label:hover ~ label {
-            color: #ffc107;
+            .rating-input label {
+                cursor: pointer;
+                font-size: 2rem;
+                color: #ddd;
+                transition: color 0.2s;
+            }
+
+            .rating-input input:checked ~ label {
+                color: #ffc107;
+            }
+
+            .rating-input label:hover, .rating-input label:hover ~ label {
+                color: #ffc107;
+            }
+
+        .active-thumb {
+            border: 2px solid #198754;
         }
-</style>
+    </style>
 
 @section Scripts {
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const mainImage   = document.getElementById('mainImage');
+                const mainImage = document.getElementById('mainImage');
                 const mainTrailer = document.getElementById('mainTrailer');
 
                 document.querySelectorAll('.thumb-switch').forEach(function (thumb) {
@@ -380,20 +424,14 @@
                         this.classList.add('active-thumb');
 
                         if (this.dataset.type === 'image') {
-                            mainImage.classList.remove('d-none');
+                            if (mainImage) mainImage.classList.remove('d-none');
                             if (mainTrailer) mainTrailer.classList.add('d-none');
                         } else {
-                            mainImage.classList.add('d-none');
+                            if (mainImage) mainImage.classList.add('d-none');
                             if (mainTrailer) mainTrailer.classList.remove('d-none');
                         }
                     });
                 });
             });
         </script>
-
-        <style>
-            .active-thumb {
-                border: 2px solid #198754;
-            }
-        </style>
 }
