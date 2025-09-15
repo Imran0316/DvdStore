@@ -1,0 +1,77 @@
+﻿@model DvdStore.Models.SalesReport
+@{
+    ViewData["Title"] = "Sales Reports";
+    Layout = "~/Views/Shared/Dashboard.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Sales Reports</h2>
+
+    <!-- Sales Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h6>Total Sales</h6>
+                    <h3>@Model.TotalSales.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h6>Total Orders</h6>
+                    <h3>@Model.TotalOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <h6>Avg Order Value</h6>
+                    <h3>@Model.AverageOrderValue.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h6>Top Product</h6>
+                    <h5>@Model.TopProduct</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Sales Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Top Selling Products</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Units Sold</th>
+                            <th>Revenue</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.ProductSales)
+                        {
+                            <tr>
+                                <td>@product.ProductName</td>
+                                <td>@product.UnitsSold</td>
+                                <td>@product.Revenue.ToString("C")</td>
+                                <td>@product.Category</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

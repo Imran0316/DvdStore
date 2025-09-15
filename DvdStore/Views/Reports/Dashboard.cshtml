@@ -1,0 +1,242 @@
+﻿@model DvdStore.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+    Layout = "~/Views/Shared/Dashboard.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Analytics Dashboard</h2>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Monthly Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.RevenueAnalysis.MonthlyRevenue.ToString("C")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.SalesReport.TotalOrders
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Customers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.CustomerStats.TotalCustomers
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Avg Order Value
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.SalesReport.AverageOrderValue.ToString("C")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Reports -->
+    <div class="row">
+        <!-- Monthly Sales Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Sales Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="salesChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Selling Products</h6>
+                </div>
+                <div class="card-body">
+                    @foreach (var product in Model.BestSellers.Take(5))
+                    {
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="font-weight-bold">@product.ProductName</span>
+                                <span class="text-success">@product.Revenue.ToString("C")</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                     style="width: @((product.Revenue / Model.BestSellers.Max(bs => bs.Revenue)) * 100)%">
+                                </div>
+                            </div>
+                            <small class="text-muted">@product.UnitsSold units sold</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trending Products -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Trending Products</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Added to Cart</th>
+                                    <th>Conversion Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.TrendingProducts)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.Category</td>
+                                        <td>@product.AddedToCart</td>
+                                        <td>@(product.ConversionRate.ToString("P1"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Performance -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Category Performance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4">
+                        <canvas id="categoryChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sales Chart
+        var salesCtx = document.getElementById('salesChart').getContext('2d');
+        var salesChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.SalesReport.MonthlyData.Select(m => m.Month))),
+                datasets: [{
+                    label: 'Revenue',
+                    data: @Html.Raw(Json.Serialize(Model.SalesReport.MonthlyData.Select(m => m.Sales))),
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    fill: true
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Category Chart
+        var categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        var categoryChart = new Chart(categoryCtx, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.SalesReport.CategorySales.Select(c => c.CategoryName))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.SalesReport.CategorySales.Select(c => c.Revenue))),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+}
