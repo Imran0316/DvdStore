@@ -49,7 +49,7 @@
                                 <small class="text-muted">Published: @item.PublishDate.ToString("MMM dd, yyyy")</small>
 
                                 <!-- DEBUG: Show item status -->
-                                <div class="mt-2 p-2 bg-light rounded">
+@*                                 <div class="mt-2 p-2 bg-light rounded">
                                     <small class="text-muted">
                                         <strong>Status:</strong><br>
                                         • Active: @item.IsActive<br>
@@ -57,10 +57,10 @@
                                         • Expired: @(item.ExpiryDate != null && item.ExpiryDate < DateTime.Now)<br>
                                         • Expiry: @(item.ExpiryDate?.ToString("MMM dd, yyyy") ?? "Never")
                                     </small>
-                                </div>
+                                </div> *@
                             </div>
                             <div class="card-footer">
-                                <a href="#" class="read-more-btn">Read More →</a>
+                                <a href="/NewsPromotion/Detail/@item.NewsID" class="read-more-btn">Read More →</a>
                             </div>
                         </div>
                     </div>

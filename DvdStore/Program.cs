@@ -58,4 +58,9 @@ app.MapControllerRoute(
     pattern: "news",
     defaults: new { controller = "News", action = "Index" });
 
+app.MapControllerRoute(
+    name: "newsDetail",
+    pattern: "news/{id}",
+    defaults: new { controller = "NewsPromotion", action = "Detail" });
+
 app.Run();

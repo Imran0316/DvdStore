@@ -69,6 +69,8 @@ namespace DvdStore.Controllers
                 }
             }
 
+
+
             if (ModelState.IsValid)
             {
                 Console.WriteLine("Model is valid, processing...");
@@ -128,7 +130,7 @@ namespace DvdStore.Controllers
 
 
 
-        //[HttpPost]
+                 //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> Create(NewsPromotion item, IFormFile imageFile)
         //{
@@ -180,28 +182,18 @@ namespace DvdStore.Controllers
         // POST: Admin - Edit news/promotion
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, NewsPromotion item, IFormFile imageFile)
+        public async Task<IActionResult> Edit(int id, NewsPromotion heroImage, IFormFile? imageFile)
         {
-            if (!IsAdminUser()) return RedirectToAction("Login", "Auth");
-
-            if (id != item.NewsID) return NotFound();
-
-            Console.WriteLine("=== EDIT METHOD STARTED ===");
-            Console.WriteLine($"Editing item ID: {id}, ModelState IsValid: {ModelState.IsValid}");
-
-            // FIX: REMOVE VALIDATION FOR THESE PROPERTIES
-            ModelState.Remove("ImageUrl");
-            ModelState.Remove("Product");    // Add this line
-            ModelState.Remove("ProductID");  // Add this line
-
-            // Log all errors
-            foreach (var state in ModelState)
+            if (!IsAdminUser())
             {
-                foreach (var error in state.Value.Errors)
-                {
-                    Console.WriteLine($"Error in {state.Key}: {error.ErrorMessage}");
-                }
+                return RedirectToAction("Login", "Auth");
             }
+
+            if (id != heroImage.NewsID) return NotFound();
+
+            // FIX: Remove ImageUrl from validation and make imageFile optional
+            ModelState.Remove("ImageUrl");
+            ModelState.Remove("imageFile"); // Add this line to make imageFile optional
 
             if (ModelState.IsValid)
             {
@@ -210,26 +202,32 @@ namespace DvdStore.Controllers
                     var existingItem = await _context.tbl_NewsPromotions.FindAsync(id);
                     if (existingItem == null) return NotFound();
 
-                    Console.WriteLine($"Found existing item: {existingItem.Title}");
-
-                    // Handle image upload
+                    // Handle image upload ONLY if a new file is provided
                     if (imageFile != null && imageFile.Length > 0)
                     {
-                        var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "news");
-                        if (!Directory.Exists(uploadFolder))
-                        {
-                            Directory.CreateDirectory(uploadFolder);
-                        }
-
                         // Validate file type
                         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
                         var extension = Path.GetExtension(imageFile.FileName).ToLower();
 
                         if (!allowedExtensions.Contains(extension))
                         {
-                            ModelState.AddModelError("imageFile", "Only image files are allowed");
+                            ModelState.AddModelError("imageFile", "Only image files are allowed (jpg, png, gif, bmp, webp)");
                             ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
-                            return View(item);
+                            return View(heroImage);
+                        }
+
+                        // Validate file size (max 5MB)
+                        if (imageFile.Length > 5 * 1024 * 1024)
+                        {
+                            ModelState.AddModelError("imageFile", "Image size must be less than 5MB");
+                            ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
+                            return View(heroImage);
+                        }
+
+                        var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "news");
+                        if (!Directory.Exists(uploadFolder))
+                        {
+                            Directory.CreateDirectory(uploadFolder);
                         }
 
                         var fileName = Guid.NewGuid().ToString() + extension;
@@ -253,33 +251,23 @@ namespace DvdStore.Controllers
                         existingItem.ImageUrl = "/uploads/news/" + fileName;
                     }
 
-                    // FIX: Ensure ProductID is properly handled
-                    if (item.ProductID == 0) // If 0 is passed (default), set to null
-                    {
-                        item.ProductID = null;
-                    }
-
                     // Update other fields
-                    existingItem.Title = item.Title;
-                    existingItem.Content = item.Content;
-                    existingItem.Type = item.Type;
-                    existingItem.IsActive = item.IsActive;
-                    existingItem.PublishDate = item.PublishDate;
-                    existingItem.ExpiryDate = item.ExpiryDate;
-                    existingItem.ProductID = item.ProductID;
+                    existingItem.Title = heroImage.Title;
+                    existingItem.Content = heroImage.Content;
+                    existingItem.Type = heroImage.Type;
+                    existingItem.IsActive = heroImage.IsActive;
+                    existingItem.PublishDate = heroImage.PublishDate;
+                    existingItem.ExpiryDate = heroImage.ExpiryDate;
+                    existingItem.ProductID = heroImage.ProductID;
 
                     _context.Update(existingItem);
                     await _context.SaveChangesAsync();
 
-                    Console.WriteLine("Item updated successfully!");
-                    await SendNewsNotification(existingItem);
-
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateConcurrencyException)
                 {
-                    Console.WriteLine($"Concurrency error: {ex.Message}");
-                    if (!NewsPromotionExists(item.NewsID))
+                    if (!NewsPromotionExists(heroImage.NewsID))
                     {
                         return NotFound();
                     }
@@ -290,17 +278,13 @@ namespace DvdStore.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"General error: {ex.Message}");
-                    ModelState.AddModelError("", "An error occurred while updating: " + ex.Message);
+                    Console.WriteLine($"Error updating news: {ex.Message}");
+                    ModelState.AddModelError("", "An error occurred while updating the news. Please try again.");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Model validation failed");
             }
 
             ViewBag.Products = _context.tbl_Products.Where(p => p.IsActive).ToList();
-            return View(item);
+            return View(heroImage);
         }
 
         // POST: Admin - Delete news/promotion
@@ -416,6 +400,42 @@ namespace DvdStore.Controllers
             {
                 Console.WriteLine($"Email notification error: {ex.Message}");
             }
+        }
+
+        // GET: NewsPromotion/Detail/{id}
+        public async Task<IActionResult> Detail(int id)
+        {
+            var newsItem = await _context.tbl_NewsPromotions
+                .Include(n => n.Product)
+                    .ThenInclude(p => p.tbl_Albums)
+                .FirstOrDefaultAsync(n => n.NewsID == id && n.IsActive);
+
+            if (newsItem == null)
+            {
+                return NotFound();
+            }
+
+            // Check if news should be visible (not expired, published, etc.)
+            var isPublished = newsItem.PublishDate <= DateTime.Now;
+            var isNotExpired = newsItem.ExpiryDate == null || newsItem.ExpiryDate >= DateTime.Now;
+
+            if (!isPublished || !isNotExpired)
+            {
+                return NotFound();
+            }
+
+            // Get related news for sidebar
+            var relatedNews = await _context.tbl_NewsPromotions
+                .Where(n => n.NewsID != id && n.IsActive &&
+                           n.PublishDate <= DateTime.Now &&
+                           (n.ExpiryDate == null || n.ExpiryDate >= DateTime.Now))
+                .OrderByDescending(n => n.PublishDate)
+                .Take(3)
+                .ToListAsync();
+
+            ViewBag.RelatedNews = relatedNews;
+
+            return View(newsItem);
         }
     }  
 }     

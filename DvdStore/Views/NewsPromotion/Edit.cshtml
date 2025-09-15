@@ -58,15 +58,21 @@
             <div class="card">
                 <div class="card-body">
                     <div class="form-group mb-3">
-                        <label class="form-label">Featured Image</label>
+                        <label class="form-label">Featured Image (Optional)</label>
                         <input type="file" name="imageFile" class="form-control" accept="image/*" />
-                        <small class="text-muted">Leave empty to keep current image</small>
+                        <small class="text-muted">Leave empty to keep current image. Max size: 5MB. Allowed formats: JPG, PNG, GIF, BMP, WEBP</small>
 
                         @if (!string.IsNullOrEmpty(Model.ImageUrl))
                         {
                             <div class="mt-2">
                                 <img src="@Model.ImageUrl" alt="Current image"
                                      style="max-width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                    <label class="form-check-label" for="removeImage">
+                                        Remove current image
+                                    </label>
+                                </div>
                             </div>
                         }
                     </div>
