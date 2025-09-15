@@ -29,10 +29,19 @@ namespace DvdStore.Controllers
                 return RedirectToAction("Categories");
             }
 
+            // ✅ Sirf error message show karo
+            var firstError = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .FirstOrDefault();
+
+            if (firstError != null)
+            {
+                ViewBag.Error = firstError.ErrorMessage;
+            }
+
             var categories = db.tbl_Category.ToList();
             return View(categories);
         }
-
         [HttpGet]
         public IActionResult EditCategory(int id)
         {

@@ -23,14 +23,15 @@ namespace DvdStore.Controllers
             ViewBag.TotalOrders = await db.tbl_Orders.CountAsync();
             ViewBag.TotalProducts = await db.tbl_Products.CountAsync();
             ViewBag.TotalFeedbacks = await db.tbl_Feedbacks.CountAsync();
-            // Recent Orders
+            // Recent Orders with INCLUDES
             var recentOrders = await db.tbl_Orders
-    .Include(o => o.tbl_Users) // User info
-    .Include(o => o.tbl_OrderDetails) // OrderDetails
-        .ThenInclude(od => od.tbl_Products) // Product info
-    .OrderByDescending(o => o.OrderDate)
-    .Take(5)
-    .ToListAsync();
+                .Include(o => o.tbl_Users) // User info
+                .Include(o => o.tbl_OrderDetails) // OrderDetails
+                    .ThenInclude(od => od.tbl_Products) // Product info
+                        .ThenInclude(p => p.tbl_Albums) // ✅ YE LINE ADD KARO - Album info
+                .OrderByDescending(o => o.OrderDate)
+                .Take(5)
+                .ToListAsync();
 
             ViewBag.RecentOrders = recentOrders;
             return View();
@@ -101,6 +102,28 @@ namespace DvdStore.Controllers
             ViewBag.Success = "Profile updated!";
             return View(admin);
         }
+        // Make User Admin
+        public IActionResult MakeAdmin(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var user = db.tbl_Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Role update karo
+            user.Role = "Admin";
+            db.SaveChanges();
+
+            TempData["Success"] = "User promoted to Admin successfully!";
+            return RedirectToAction("Users");
+        }
 
     }
+
 }

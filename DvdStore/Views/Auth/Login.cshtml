@@ -2,7 +2,7 @@
     Layout = null;
 }
 
-@model DvdStore.Models.Users
+@model DvdStore.Models.LoginVM // Ye change karein
 
 <!DOCTYPE html>
 <html lang="zxx">
@@ -12,7 +12,7 @@
     <meta name="keywords" content="Anime, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@ViewData["Title"] - Anime Template</title>
+    <title>Login - Anime Template</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="~/css/style.css" type="text/css">
 </head>
 <style>
+    /* Aapka existing CSS same rahega */
     body {
         background: linear-gradient(135deg, #0b0c2a, #1a1b3a);
         font-family: 'Mulish', sans-serif;
@@ -73,12 +74,9 @@
         }
 
     @@keyframes rotate {
-        100%
-
-    {
-        transform: rotate(360deg);
-    }
-
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     h2 {
@@ -142,33 +140,62 @@
         position: relative;
         z-index: 2;
     }
+
+    /* Validation errors ke liye extra styling */
+    .field-validation-error {
+        color: #ff6b6b !important;
+        font-size: 14px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border-left: 3px solid #ff6b6b;
+    }
 </style>
 <body>
-    <!-- 🔥 Proper Centered Card -->
     <div class="register-card">
         <h2>Login</h2>
-        <div class="text-danger small text-center mb-3">@ViewBag.message</div>
+        
+      
 
         <form asp-action="Login" method="post" class="reg">
+        <div asp-validation-summary="All" class="validation-summary-errors"></div>
             <div class="mb-3">
-                <label>Email</label>
-                <input asp-for="Email" name="Email" class="form-control" />
-                <span asp-validation-for="Email" class="error text-danger"></span>
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger error"></span>
             </div>
 
             <div class="mb-3">
-                <label>Password</label>
-                <input asp-for="Password" name="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="error text-danger"></span>
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger error"></span>
             </div>
 
             <button type="submit" class="btn-register">Sign In</button>
         </form>
+
+        <!-- 🔥 Register ka link agar chahiye toh -->
+        <div class="text-center mt-3" style="position: relative; z-index: 2;">
+            <span class="text-light">Not registered? </span>
+            <a href="@Url.Action("Register", "Auth")" style="color: #ff3c3c; text-decoration: none;">Create an account</a>
+        </div>
     </div>
 
+    <!-- ✅ Client-Side Validation Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+   
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
     }
 </body>
 </html>
-

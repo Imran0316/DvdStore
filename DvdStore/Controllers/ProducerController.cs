@@ -20,22 +20,37 @@ namespace DvdStore.Controllers
 
 
         [HttpPost]
-        public IActionResult Producer(string ProducerName, string ContactInfo)
+        public IActionResult Producer(Producers producer) // ✅ Producers model as parameter
         {
-            if (ModelState.IsValid)
+            // Manual validation karo
+            if (string.IsNullOrEmpty(producer.ProducerName))
             {
-                var producer = new Producers
-                {
-                    ProducerName = ProducerName,
-                    ContactInfo = ContactInfo,
-                    CreatedAt = DateTime.Now
-                };
-
+                ViewBag.Error = "Producer name is required!";
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(producer.ProducerName, @"^[a-zA-Z\s]+$"))
+            {
+                ViewBag.Error = "Producer name can only contain letters and spaces!";
+            }
+            else if (string.IsNullOrEmpty(producer.ContactInfo))
+            {
+                ViewBag.Error = "Phone number is required!";
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(producer.ContactInfo, @"^\d{11}$"))
+            {
+                ViewBag.Error = "Phone number must be exactly 11 digits!";
+            }
+            else
+            {
+                // Success case
+                producer.CreatedAt = DateTime.Now;
                 db.tbl_Producers.Add(producer);
                 db.SaveChanges();
-                return RedirectToAction("Producer");
+
+                ViewBag.Success = "Producer added successfully!";
             }
-            return View();
+
+            var producers = db.tbl_Producers.ToList();
+            return View(producers);
         }
         //Edit producer
         [HttpGet]

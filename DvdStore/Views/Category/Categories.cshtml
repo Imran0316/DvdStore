@@ -5,7 +5,12 @@
 }
 
 <h2>Manage Categories</h2>
-
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
+}
 <!-- Add New Category Form -->
 <form asp-action="Categories" method="post" class="mb-3">
     <div class="row">

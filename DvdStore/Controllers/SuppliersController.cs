@@ -21,30 +21,39 @@ namespace DvdStore.Controllers
         [HttpPost]
         public IActionResult Suppliers(string SupplierName, string ContactInfo)
         {
-            try
+            // Manual validation
+            if (string.IsNullOrEmpty(SupplierName))
             {
-                if (ModelState.IsValid)
+                ViewBag.Error = "Supplier name is required!";
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(SupplierName, @"^[a-zA-Z\s]+$"))
+            {
+                ViewBag.Error = "Name can only contain letters and spaces!";
+            }
+            else if (string.IsNullOrEmpty(ContactInfo))
+            {
+                ViewBag.Error = "Contact info is required!";
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(ContactInfo, @"^\d{11}$"))
+            {
+                ViewBag.Error = "Phone number must be 11 digits!";
+            }
+            else
+            {
+                // Success case
+                var supplier = new Suppliers
                 {
-                    var supplier = new Suppliers
-                    {
-                        SupplierName = SupplierName,
-                        ContactInfo = ContactInfo,
-                        CreatedAt = DateTime.Now
-                    };
+                    SupplierName = SupplierName,
+                    ContactInfo = ContactInfo,
+                    CreatedAt = DateTime.Now
+                };
 
-                    db.tbl_Suppliers.Add(supplier);
-                    db.SaveChanges();
+                db.tbl_Suppliers.Add(supplier);
+                db.SaveChanges();
 
-                    ViewBag.Success = "Supplier added successfully!";
-                    return RedirectToAction("Suppliers"); // Redirect to refresh the list
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Error adding supplier: " + ex.Message;
+                ViewBag.Success = "Supplier added successfully!";
             }
 
-            // If we get here, something went wrong - redisplay the form
             var suppliers = db.tbl_Suppliers.ToList();
             return View(suppliers);
         }

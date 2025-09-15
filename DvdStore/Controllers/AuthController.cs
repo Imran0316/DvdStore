@@ -38,34 +38,50 @@ namespace DvdStore.Controllers
             return RedirectToAction("Login");
         }
 
-        public IActionResult Login() => View();
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
 
         [HttpPost]
-        public IActionResult Login(string Email, string Password)
+        public IActionResult Login(LoginVM model) 
         {
-            var user = db.tbl_Users.FirstOrDefault(u => u.Email == Email);
-            if (user != null &&
-                PasswordHasher.VerifyHashedPassword(user, user.Password, Password) == PasswordVerificationResult.Success)
+
+            if (!ModelState.IsValid)
             {
-                // Store session info
+                return View(model); 
+            }
+
+            // Database se user check karein
+            var user = db.tbl_Users.FirstOrDefault(u => u.Email == model.Email);
+
+            // Password verify karein
+            if (user != null &&
+                PasswordHasher.VerifyHashedPassword(user, user.Password, model.Password) == PasswordVerificationResult.Success)
+            {
+                // Session set karein
                 HttpContext.Session.SetInt32("UserId", user.UserID);
                 HttpContext.Session.SetString("UserName", user.Name);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", user.Role ?? "");
 
-                // 🔑 Role-based redirect
+                // Role-based redirect
                 if (user.Role != null && user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    return RedirectToAction("Index", "Admin"); // go to admin dashboard
+                    return RedirectToAction("Index", "Admin");
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");  // normal user
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
-            ViewBag.Error = "Invalid Email or Password";
-            return View();
+            // ✅ Properly error add karein
+            ModelState.AddModelError(string.Empty, "Invalid Email or Password!");
+            return View(model);
         }
 
         public IActionResult Logout()

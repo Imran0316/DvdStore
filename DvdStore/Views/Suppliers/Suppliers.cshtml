@@ -21,20 +21,25 @@
 }
 
 <!-- Add New Supplier Form -->
-<form asp-action="Suppliers" method="post" class="mb-3" onsubmit="console.log('Form submitting...')">
-    <div class="row">
-        <div class="col-md-4">
-            <input name="SupplierName" placeholder="Supplier Name" class="form-control" required />
-            <span class="text-danger">@Html.ValidationMessage("SupplierName")</span>
-        </div>
-        <div class="col-md-6">
-            <input name="ContactInfo" placeholder="Contact Info" class="form-control" required />
-            <span class="text-danger">@Html.ValidationMessage("ContactInfo")</span>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-success">Add</button>
-        </div>
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
     </div>
+}
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Success
+    </div>
+}
+
+<!-- Form -->
+<form asp-action="Suppliers" method="post">
+    <input name="SupplierName" placeholder="Supplier Name" class="form-control" />
+    <input name="ContactInfo" placeholder="Contact Info" class="form-control" />
+    <button type="submit">Add</button>
 </form>
 
 <!-- Suppliers Table -->
