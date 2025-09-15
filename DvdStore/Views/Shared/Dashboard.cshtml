@@ -231,8 +231,29 @@
         }
 
         }
-        
-       
+
+        /* Chart containers */
+        .chart-area {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-pie {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Card styles for reports */
+        .card .card-body {
+            padding: 1.25rem;
+        }
+
+        .card .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
  </style>
 </head>
 <body>
@@ -290,15 +311,28 @@
                     <i class="fa fa-shopping-cart"></i><span class="nav-text"> Orders</span>
                 </a>
 
-                <a class="nav-link @(ctrl == "reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
-                    <i class="fa fa-chart-line"></i><span class="nav-text"> Reports</span>
-                </a>
+@*                 <a class="nav-link @(ctrl == "reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
+                    <i class="fa-regular fa-file"></i><span class="nav-text"> Reports</span>
+                </a> *@
                 <a class="nav-link @(ctrl == "Invoices" ? "active" : "")" asp-controller="PurchaseInvoice" asp-action="Index">
-                    <i class="fa fa-chart-line"></i><span class="nav-text"> Invoices</span>
+                    <i class="fa-solid fa-file-lines"></i><span class="nav-text"> Invoices</span>
                 </a>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="/Reports/Dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Reports/Sales">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Sales Reports</span>
+                    </a>
+                </li>
+
                 <a class="nav-link @(ctrl == "Users" ? "active" : "")" asp-controller="Admin" asp-action="Users">
-                    <i class="fa fa-chart-line"></i><span class="nav-text"> Users</span>
+                    <i class="fa-solid fa-users"></i><span class="nav-text"> Users</span>
                 </a>
 
                 <a class="nav-link @(ctrl == "HeroImages" ? "active" : "")" asp-controller="HeroImages" asp-action="Index">

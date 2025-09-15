@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http.Extensions
+<!DOCTYPE html>
 <html lang="zxx">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +7,13 @@
     <meta name="keywords" content="DVD, Games, Movies, Entertainment">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    @if (ViewData["Title"] != null)
+    {
+        <meta property="og:title" content="@ViewData["Title"]" />
+        <meta property="og:description" content="@(ViewData["Description"] ?? "Latest news and promotions")" />
+        <meta property="og:image" content="@(ViewData["ImageUrl"] ?? "/images/logo.png")" />
+        <meta property="og:url" content="@Context.Request.GetEncodedUrl()" />
+    }
     <title>@ViewData["Title"] - Entertainment Store</title>
 
     <!-- Google Font -->
